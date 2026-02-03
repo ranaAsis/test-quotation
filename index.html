@@ -2304,6 +2304,7 @@ const PDF_CONFIG = {
     
     // Static PDF paths (relative to baseUrl)
     staticPdfs: {
+        page1Template: '/assets/pdf/page1_template.pdf',
         companyPresentation: '/assets/pdf/company_presentation.pdf',
         termsConditions: '/assets/pdf/terms_conditions.pdf'
     },
@@ -2313,11 +2314,11 @@ const PDF_CONFIG = {
     
     // Image assets
     images: {
-        asusLogo: '/assets/images/asis_logo.png',
+        asusLogo: '/assets/images/asis_logo.jpg',
+        asisDiamond: '/assets/images/asis_diamond.jpg',
         shield: '/assets/images/shield.png',
         arrow: '/assets/images/arrow.png',
-        stamp: '/assets/images/stamp.png',
-        diamondLogo: '/assets/images/diamond_logo.png'
+        stamp: '/assets/images/stamp.png'
     }
 };
 
@@ -2527,22 +2528,196 @@ function gatherFormData() {
     };
 }
 
-// ==================== PAGE 1: COVER PAGE ====================
+// ==================== PAGE 1: COVER PAGE (Using Template) ====================
 async function generateCoverPage(pdfDoc, fonts, formData) {
+    const { rgb } = PDFLib;
+    
+    try {
+        // Try to load the page 1 template
+        const templateUrl = PDF_CONFIG.baseUrl + PDF_CONFIG.staticPdfs.page1Template;
+        const response = await fetch(templateUrl);
+        
+        if (!response.ok) {
+            console.warn('Page 1 template not found, generating from scratch');
+            await generateCoverPageFallback(pdfDoc, fonts, formData);
+            return;
+        }
+        
+        const templateBytes = await response.arrayBuffer();
+        const templatePdf = await PDFLib.PDFDocument.load(templateBytes);
+        const [templatePage] = await pdfDoc.copyPages(templatePdf, [0]);
+        pdfDoc.addPage(templatePage);
+        
+        // Get the page we just added (last page)
+        const page = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
+        const { width, height } = page.getSize();
+        
+        // Colors
+        const asiaRed = rgb(0.722, 0.196, 0.251); // #B83240
+        const darkGray = rgb(0.3, 0.3, 0.3);
+        const black = rgb(0, 0, 0);
+        
+        // === ADD DYNAMIC TEXT ON TOP OF TEMPLATE ===
+        
+        // Quote Number (below "ADVANCE MARITIME SOLUTION")
+        page.drawText(formData.quoteNum, {
+            x: 265,
+            y: height - 205,
+            size: 20,
+            font: fonts.helveticaBold,
+            color: asiaRed
+        });
+        
+        // Quotation Title Line 1
+        const titleLines = splitTextToLines(formData.quoteTitle, 45);
+        page.drawText(titleLines[0] || '', {
+            x: 50,
+            y: height - 330,
+            size: 18,
+            font: fonts.helveticaBold,
+            color: black
+        });
+        
+        // Quotation Title Line 2 (if exists)
+        if (titleLines[1]) {
+            page.drawText(titleLines[1], {
+                x: 50,
+                y: height - 355,
+                size: 18,
+                font: fonts.helveticaBold,
+                color: black
+            });
+        }
+        
+        // Tender Number (if present)
+        let yOffset = titleLines[1] ? 380 : 355;
+        if (formData.tender) {
+            page.drawText('Tender No. ' + formData.tender, {
+                x: 50,
+                y: height - yOffset,
+                size: 11,
+                font: fonts.helvetica,
+                color: darkGray
+            });
+            yOffset += 30;
+        }
+        
+        // Customer Company (after "Proposed To:")
+        let custY = height - 455;
+        if (formData.custCompany) {
+            page.drawText(formData.custCompany, {
+                x: 50,
+                y: custY,
+                size: 16,
+                font: fonts.helveticaBold,
+                color: black
+            });
+            custY -= 25;
+        }
+        
+        // Customer Contact
+        if (formData.custContact) {
+            page.drawText(formData.custContact, {
+                x: 50,
+                y: custY,
+                size: 14,
+                font: fonts.helveticaBold,
+                color: black
+            });
+            custY -= 25;
+        }
+        
+        // Customer Address (next to pin icon)
+        if (formData.custAddress) {
+            page.drawText(formData.custAddress, {
+                x: 68,
+                y: custY,
+                size: 10,
+                font: fonts.helvetica,
+                color: darkGray
+            });
+            custY -= 18;
+        }
+        
+        // Customer Phone (next to phone icon)
+        if (formData.custPhone) {
+            page.drawText(formData.custPhone, {
+                x: 68,
+                y: custY,
+                size: 10,
+                font: fonts.helvetica,
+                color: darkGray
+            });
+            custY -= 18;
+        }
+        
+        // Customer Email (next to email icon)
+        if (formData.custEmail) {
+            page.drawText(formData.custEmail, {
+                x: 68,
+                y: custY,
+                size: 10,
+                font: fonts.helvetica,
+                color: darkGray
+            });
+        }
+        
+        // Salesman Name (after "Prepared")
+        let salesY = height - 680;
+        if (formData.salesmanInfo) {
+            page.drawText(formData.salesmanInfo.name.toUpperCase(), {
+                x: 50,
+                y: salesY,
+                size: 14,
+                font: fonts.helveticaBold,
+                color: black
+            });
+            salesY -= 20;
+            
+            // Salesman Email (next to email icon)
+            page.drawText(formData.salesmanInfo.email, {
+                x: 68,
+                y: salesY,
+                size: 10,
+                font: fonts.helvetica,
+                color: darkGray
+            });
+            salesY -= 18;
+            
+            // Salesman Phone (next to phone icon)
+            page.drawText(formData.salesmanInfo.phone, {
+                x: 68,
+                y: salesY,
+                size: 10,
+                font: fonts.helvetica,
+                color: darkGray
+            });
+        }
+        
+        console.log('Cover page generated from template');
+        
+    } catch (error) {
+        console.warn('Error loading template, using fallback:', error);
+        await generateCoverPageFallback(pdfDoc, fonts, formData);
+    }
+}
+
+// Fallback cover page if template is not available
+async function generateCoverPageFallback(pdfDoc, fonts, formData) {
     const { rgb } = PDFLib;
     const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
     const { width, height } = page.getSize();
     
     // Colors
-    const asiaRed = rgb(0.722, 0.196, 0.251); // #B83240
+    const asiaRed = rgb(0.722, 0.196, 0.251);
     const darkGray = rgb(0.4, 0.4, 0.4);
     const black = rgb(0, 0, 0);
     
-    // Header - ASIS Logo text (placeholder - will be replaced with actual logo)
-    page.drawText('ASIS', {
-        x: 245,
+    // Header - ASIS text placeholder
+    page.drawText('ASIS BOATS', {
+        x: 220,
         y: height - 60,
-        size: 36,
+        size: 28,
         font: fonts.helveticaBold,
         color: asiaRed
     });
@@ -2554,37 +2729,28 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         color: darkGray
     });
     
-    // Shield area (left side) - placeholder text
-    page.drawText('ASIS BOATS', {
-        x: 60,
-        y: height - 200,
-        size: 14,
-        font: fonts.helveticaBold,
-        color: black
-    });
-    
-    // "ADVANCE MARITIME SOLUTION" + Quote Number (right side)
+    // "ADVANCE MARITIME SOLUTION" + Quote Number
     page.drawText('ADVANCE MARITIME SOLUTION', {
-        x: 280,
+        x: 250,
         y: height - 180,
         size: 14,
         font: fonts.helveticaBold,
         color: black
     });
     page.drawText(formData.quoteNum, {
-        x: 280,
-        y: height - 200,
-        size: 18,
+        x: 250,
+        y: height - 205,
+        size: 20,
         font: fonts.helveticaBold,
         color: asiaRed
     });
     
-    // Quotation Title (Line 1 and potentially Line 2)
+    // Quotation Title
     const titleLines = splitTextToLines(formData.quoteTitle, 50);
-    let yPos = height - 300;
+    let yPos = height - 320;
     titleLines.forEach((line, i) => {
         page.drawText(line, {
-            x: 60,
+            x: 50,
             y: yPos - (i * 25),
             size: 18,
             font: fonts.helveticaBold,
@@ -2593,10 +2759,10 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
     });
     yPos -= (titleLines.length * 25) + 10;
     
-    // Tender number (if present)
+    // Tender
     if (formData.tender) {
-        page.drawText(`Tender No. ${formData.tender}`, {
-            x: 60,
+        page.drawText('Tender No. ' + formData.tender, {
+            x: 50,
             y: yPos,
             size: 11,
             font: fonts.helvetica,
@@ -2608,7 +2774,7 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
     // "Proposed To:" section
     yPos -= 20;
     page.drawText('Proposed To:', {
-        x: 60,
+        x: 50,
         y: yPos,
         size: 11,
         font: fonts.helvetica,
@@ -2616,110 +2782,42 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
     });
     yPos -= 25;
     
-    // Customer Company
     if (formData.custCompany) {
-        page.drawText(formData.custCompany, {
-            x: 60,
-            y: yPos,
-            size: 16,
-            font: fonts.helveticaBold,
-            color: black
-        });
+        page.drawText(formData.custCompany, { x: 50, y: yPos, size: 16, font: fonts.helveticaBold, color: black });
         yPos -= 22;
     }
-    
-    // Customer Contact
     if (formData.custContact) {
-        page.drawText(formData.custContact, {
-            x: 60,
-            y: yPos,
-            size: 14,
-            font: fonts.helveticaBold,
-            color: black
-        });
+        page.drawText(formData.custContact, { x: 50, y: yPos, size: 14, font: fonts.helveticaBold, color: black });
         yPos -= 22;
     }
-    
-    // Address with icon
     if (formData.custAddress) {
-        drawLocationPin(page, 68, yPos, darkGray);
-        page.drawText(formData.custAddress, {
-            x: 80,
-            y: yPos,
-            size: 10,
-            font: fonts.helvetica,
-            color: darkGray
-        });
+        page.drawText(formData.custAddress, { x: 50, y: yPos, size: 10, font: fonts.helvetica, color: darkGray });
         yPos -= 18;
     }
-    
-    // Phone
     if (formData.custPhone) {
-        drawPhoneIcon(page, 68, yPos, darkGray);
-        page.drawText(formData.custPhone, {
-            x: 80,
-            y: yPos,
-            size: 10,
-            font: fonts.helvetica,
-            color: darkGray
-        });
+        page.drawText(formData.custPhone, { x: 50, y: yPos, size: 10, font: fonts.helvetica, color: darkGray });
         yPos -= 18;
     }
-    
-    // Email
     if (formData.custEmail) {
-        drawEnvelopeIcon(page, 68, yPos, darkGray);
-        page.drawText(formData.custEmail, {
-            x: 80,
-            y: yPos,
-            size: 10,
-            font: fonts.helvetica,
-            color: darkGray
-        });
+        page.drawText(formData.custEmail, { x: 50, y: yPos, size: 10, font: fonts.helvetica, color: darkGray });
     }
     
-    // "Prepared" section (bottom left)
+    // "Prepared" section
     let prepY = 180;
-    page.drawText('Prepared', {
-        x: 60,
-        y: prepY,
-        size: 11,
-        font: fonts.helvetica,
-        color: darkGray
-    });
+    page.drawText('Prepared', { x: 50, y: prepY, size: 11, font: fonts.helvetica, color: darkGray });
     prepY -= 25;
     
     if (formData.salesmanInfo) {
-        page.drawText(formData.salesmanInfo.name.toUpperCase(), {
-            x: 60,
-            y: prepY,
-            size: 14,
-            font: fonts.helveticaBold,
-            color: black
-        });
+        page.drawText(formData.salesmanInfo.name.toUpperCase(), { x: 50, y: prepY, size: 14, font: fonts.helveticaBold, color: black });
         prepY -= 18;
-        drawEnvelopeIcon(page, 68, prepY, darkGray);
-        page.drawText(formData.salesmanInfo.email, {
-            x: 80,
-            y: prepY,
-            size: 10,
-            font: fonts.helvetica,
-            color: darkGray
-        });
+        page.drawText(formData.salesmanInfo.email, { x: 50, y: prepY, size: 10, font: fonts.helvetica, color: darkGray });
         prepY -= 16;
-        drawPhoneIcon(page, 68, prepY, darkGray);
-        page.drawText(formData.salesmanInfo.phone, {
-            x: 80,
-            y: prepY,
-            size: 10,
-            font: fonts.helvetica,
-            color: darkGray
-        });
+        page.drawText(formData.salesmanInfo.phone, { x: 50, y: prepY, size: 10, font: fonts.helvetica, color: darkGray });
     }
     
     // Footer
-    page.drawText('ASIS Boats L.L.C, Jebel Ali Industrial Area 2, Dubai, United Arab Emirates, Tel: +971 880 4441, www.asisboats.com', {
-        x: 60,
+    page.drawText('ASIS Boats L.L.C, Jebel Ali Industrial Area 2, Dubai, UAE | Tel: +971 880 4441 | www.asisboats.com', {
+        x: 80,
         y: 30,
         size: 8,
         font: fonts.helvetica,
