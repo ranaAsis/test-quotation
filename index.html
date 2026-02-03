@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASIS Boats - Professional Quotation System V12</title>
+    <title>ASIS Boats - Professional Quotation System V28</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PDF Generation Libraries -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
     <style>
         :root {
             --navy: #0f2847; --navy-dark: #0a1628; --navy-light: #1a3a5c;
-            --gold: #c9a227; --gold-light: #e8c547; --gold-dark: #a68521;
+            --gold: #B83240; --gold-light: #d13d4c; --gold-dark: #A52A3A;
             --white: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-300: #dee2e6;
             --gray-400: #ced4da; --gray-500: #adb5bd; --gray-600: #6c757d; --gray-700: #495057;
             --success: #28a745; --danger: #dc3545; --warning: #ffc107;
@@ -21,21 +23,21 @@
         .header { background: linear-gradient(135deg, var(--navy-dark), var(--navy)); padding: 20px 30px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .header-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .logo-area { display: flex; align-items: center; gap: 20px; }
-        .logo-divider { width: 1px; height: 40px; background: linear-gradient(180deg, transparent, var(--gold), transparent); }
-        .logo-text span { font-size: 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; }
+        .logo-divider { width: 1px; height: 40px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.5), transparent); }
+        .logo-text span { font-size: 10px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 2px; }
         .logo-text h1 { color: var(--white); font-size: 20px; font-weight: 600; }
         .header-right { display: flex; align-items: center; gap: 15px; }
-        .quote-badge { background: rgba(201,162,39,0.15); border: 1px solid var(--gold); color: var(--gold); padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+        .quote-badge { background: var(--gold); border: 1px solid var(--gold); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; }
         
         /* Progress */
-        .progress-bar { background: var(--navy-dark); padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .progress-bar { background: var(--navy-dark); padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); position: sticky; top: 80px; z-index: 99; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .progress-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; position: relative; }
         .progress-inner::before { content: ''; position: absolute; top: 20px; left: 60px; right: 60px; height: 2px; background: rgba(255,255,255,0.2); }
         .step { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; z-index: 1; }
         .step-num { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; color: var(--gray-500); font-weight: 600; font-size: 14px; margin-bottom: 8px; transition: all 0.3s; }
         .step-label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
-        .step.active .step-num { background: var(--gold); border-color: var(--gold); color: var(--navy-dark); box-shadow: 0 0 20px rgba(201,162,39,0.4); }
-        .step.active .step-label { color: var(--gold); }
+        .step.active .step-num { background: var(--gold); border-color: var(--gold); color: white; box-shadow: 0 0 20px rgba(184,50,64,0.4); }
+        .step.active .step-label { color: white; }
         .step.done .step-num { background: var(--success); border-color: var(--success); color: white; }
         .step.done .step-label { color: var(--success); }
         
@@ -63,7 +65,7 @@
         .boat-type::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--gray-300); transition: all 0.3s; }
         .boat-type:hover { border-color: var(--navy); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .boat-type:hover::before { background: var(--navy); }
-        .boat-type.selected { border-color: var(--gold); background: linear-gradient(135deg, #fffef5, #fff9e6); }
+        .boat-type.selected { border-color: var(--gold); background: linear-gradient(135deg, #fef5f6, #fdeaec); }
         .boat-type.selected::before { background: var(--gold); }
         .boat-type-icon { width: 80px; height: 80px; margin: 0 auto 15px; background: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .boat-type h3 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
@@ -77,30 +79,30 @@
         .boat-sizes { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         .boat-size { background: var(--gray-100); border: 2px solid var(--gray-200); border-radius: 10px; padding: 18px; cursor: pointer; text-align: center; transition: all 0.3s; }
         .boat-size:hover { border-color: var(--navy); transform: translateY(-2px); }
-        .boat-size.selected { border-color: var(--gold); background: linear-gradient(135deg, #fffef5, #fff9e6); }
+        .boat-size.selected { border-color: var(--gold); background: linear-gradient(135deg, #fef5f6, #fdeaec); }
         .boat-size .size { font-size: 22px; font-weight: 700; color: var(--navy); }
         .boat-size .price { font-size: 15px; font-weight: 600; color: var(--gold-dark); margin: 6px 0; }
         .boat-size .specs { font-size: 11px; color: var(--gray-500); }
         
         /* Summary Sidebar */
-        .summary { background: linear-gradient(135deg, var(--navy-dark), var(--navy)); border-radius: 12px; padding: 22px; color: var(--white); position: sticky; top: 180px; }
-        .summary-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .summary { background: linear-gradient(135deg, var(--navy-dark), var(--navy)); border-radius: 12px; padding: 22px; color: var(--white); position: sticky; top: 200px; }
+        .summary-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: white; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .summary-row .lbl { color: var(--gray-400); }
         .summary-row .val { font-weight: 600; }
         .summary-total { display: flex; justify-content: space-between; padding: 15px 0; margin-top: 10px; border-top: 2px solid var(--gold); font-size: 18px; font-weight: 700; }
-        .summary-total .lbl { color: var(--gold); }
+        .summary-total .lbl { color: white; }
         .curr-btns { display: flex; gap: 5px; margin-top: 15px; }
         .rate-info { font-size: 11px; color: var(--gray-500); margin-top: 8px; text-align: center; }
         .curr-btn { flex: 1; padding: 10px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: var(--gray-400); border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.3s; }
-        .curr-btn.active { background: var(--gold); border-color: var(--gold); color: var(--navy-dark); }
+        .curr-btn.active { background: var(--gold); border-color: var(--gold); color: white; }
         
         /* Categories */
         .category { background: var(--white); border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
         .cat-header { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: var(--white); padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
         .cat-header:hover { background: linear-gradient(135deg, var(--navy-light), var(--navy)); }
         .cat-header h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; display: flex; align-items: center; }
-        .cat-header .cat-total { background: var(--gold); color: var(--navy-dark); padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; }
+        .cat-header .cat-total { background: var(--gold); color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; }
         .cat-header .arrow { font-size: 10px; margin-left: 10px; transition: transform 0.3s; }
         .cat-header.open .arrow { transform: rotate(180deg); }
         .cat-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
@@ -112,29 +114,51 @@
         .main-group-header:hover { background: linear-gradient(135deg, #2d4a7c, #1a365d); }
         .main-group-header h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0; display: flex; align-items: center; gap: 12px; }
         .main-group-header h2 .group-icon { font-size: 22px; }
-        .main-group-header .group-total { background: var(--gold); color: var(--navy-dark); padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; }
+        .main-group-header .group-total { background: var(--gold); color: white; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; }
         .main-group-header .group-arrow { font-size: 14px; margin-left: 12px; transition: transform 0.3s; }
         .main-group-header.open .group-arrow { transform: rotate(180deg); }
-        .main-group-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; background: var(--gray-50); }
+        .main-group-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; background: #f0f4f8; }
         .main-group-content.open { max-height: 15000px; }
         .main-group-inner { padding: 15px; }
         .main-group-inner .category { margin-bottom: 10px; }
+        
+        /* Main group color variants */
+        .main-group-engine .main-group-content, .main-group-engine .main-group-inner { background: #e6f4f8; }
+        .main-group-engine .subgroup { background: #d4eef5; border-color: #a8dae8; }
+        .main-group-engine .subgroup-header { background: #bde4f0; }
+        .main-group-engine .subgroup-header:hover { background: #a8dae8; }
+        .main-group-engine .subgroup-content { background: #e6f4f8; }
+        
+        .main-group-accessories .main-group-content, .main-group-accessories .main-group-inner { background: #fdf6e9; }
+        .main-group-accessories .subgroup { background: #faecd4; border-color: #f0d9a8; }
+        .main-group-accessories .subgroup-header { background: #f5e4c4; }
+        .main-group-accessories .subgroup-header:hover { background: #f0d9a8; }
+        .main-group-accessories .subgroup-content { background: #fdf6e9; }
+        
+        .main-group-electronics .main-group-content, .main-group-electronics .main-group-inner { background: #f3eefa; }
+        .main-group-electronics .subgroup { background: #e8dcf5; border-color: #d4c4eb; }
+        .main-group-electronics .subgroup-header { background: #ddd0f0; }
+        .main-group-electronics .subgroup-header:hover { background: #d4c4eb; }
+        .main-group-electronics .subgroup-content { background: #f3eefa; }
         
         /* Flat category (top-level like Propulsion) */
         .flat-category { margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
         .flat-category .cat-header { background: linear-gradient(135deg, #1a365d, #2d4a7c); padding: 18px 22px; }
         .flat-category .cat-header h3 { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
         .flat-category .cat-total { padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; }
+        .flat-category.engine-flat .cat-content { background: #e6f4f8; }
+        .flat-category.accessories-flat .cat-content { background: #fdf6e9; }
+        .flat-category.electronics-flat .cat-content { background: #f3eefa; }
         
         /* Nested subgroup (e.g., Seating within ASIS Accessories) */
-        .subgroup { margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid var(--gray-300); }
-        .subgroup-header { background: linear-gradient(135deg, #4a5568, #718096); color: var(--white); padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .subgroup-header:hover { background: linear-gradient(135deg, #718096, #4a5568); }
+        .subgroup { margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #d1dce8; background: #e8eef4; }
+        .subgroup-header { background: #dbe4ed; color: #2d3748; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .subgroup-header:hover { background: #cdd8e6; }
         .subgroup-header h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
-        .subgroup-header .subgroup-total { background: var(--gold); color: var(--navy-dark); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .subgroup-header .subgroup-total { background: var(--gold); color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         .subgroup-header .subgroup-arrow { font-size: 10px; margin-left: 10px; transition: transform 0.3s; }
         .subgroup-header.open .subgroup-arrow { transform: rotate(180deg); }
-        .subgroup-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: var(--gray-100); }
+        .subgroup-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: #f5f7fa; }
         .subgroup-content.open { max-height: 5000px; }
         .subgroup-inner { padding: 10px; }
         .subgroup-inner .category { margin-bottom: 8px; }
@@ -160,7 +184,7 @@
         .add-btn { background: var(--success); color: var(--white); border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; margin-top: 12px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .add-btn:hover { background: #218838; transform: translateY(-1px); }
         
-        .custom-input { width: 100%; padding: 10px; border: 2px dashed var(--gold); border-radius: 6px; font-size: 13px; background: #fffef5; }
+        .custom-input { width: 100%; padding: 10px; border: 2px dashed var(--gold); border-radius: 6px; font-size: 13px; background: #fef5f6; }
         .custom-input:focus { outline: none; border-style: solid; }
         
         /* Forms */
@@ -174,8 +198,8 @@
         
         /* Buttons */
         .btn { padding: 14px 28px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--navy-dark); box-shadow: 0 4px 15px rgba(201,162,39,0.3); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,162,39,0.4); }
+        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: white; box-shadow: 0 4px 15px rgba(184,50,64,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(184,50,64,0.4); }
         .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
         .btn-secondary:hover { background: var(--gray-300); }
         .btn-success { background: linear-gradient(135deg, var(--success), #1e7e34); color: var(--white); }
@@ -187,7 +211,7 @@
         .preview { background: var(--white); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
         .preview-header { background: var(--navy); color: var(--white); padding: 40px; text-align: center; }
         .preview-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 5px; }
-        .preview-header p { color: var(--gold); font-size: 14px; letter-spacing: 2px; }
+        .preview-header p { color: white; font-size: 14px; letter-spacing: 2px; }
         .preview-body { padding: 40px; }
         .preview-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 2px solid var(--gray-200); }
         .preview-meta h4 { color: var(--navy); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
@@ -215,6 +239,55 @@
         .info-banner .icon { font-size: 24px; }
         .info-banner .text { font-size: 13px; color: #1565c0; }
         .info-banner .text strong { display: block; margin-bottom: 3px; }
+
+        /* Radio Button Groups (Exclusive Categories) */
+        .radio-group { padding: 15px; }
+        .radio-group-label { font-size: 11px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .radio-group-label .exclusive-badge { background: var(--gold); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; }
+        .radio-option { display: flex; align-items: center; padding: 12px 15px; margin-bottom: 8px; background: var(--gray-100); border: 2px solid var(--gray-200); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .radio-option:hover { border-color: var(--navy); background: var(--white); }
+        .radio-option.selected { border-color: var(--gold); background: linear-gradient(135deg, #fef5f6, #fdeaec); }
+        .radio-option input[type="radio"] { width: 18px; height: 18px; margin-right: 12px; accent-color: var(--gold); cursor: pointer; }
+        .radio-option .option-details { flex: 1; }
+        .radio-option .option-name { font-size: 13px; font-weight: 500; color: var(--navy); }
+        .radio-option .option-price { font-size: 14px; font-weight: 700; color: var(--gold-dark); margin-left: auto; }
+        .radio-option .option-price.tbd { color: var(--warning); font-style: italic; }
+        .radio-option.none-option { background: var(--white); border-style: dashed; }
+        .radio-option.none-option .option-name { color: var(--gray-500); font-style: italic; }
+
+        /* Checkbox Groups (Multi-select Categories) */
+        .checkbox-group { padding: 15px; }
+        .checkbox-option { display: flex; align-items: center; padding: 12px 15px; margin-bottom: 8px; background: var(--gray-100); border: 2px solid var(--gray-200); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .checkbox-option:hover { border-color: var(--navy); background: var(--white); }
+        .checkbox-option.selected { border-color: var(--success); background: linear-gradient(135deg, #f0fff4, #e6ffed); }
+        .checkbox-option input[type="checkbox"] { width: 18px; height: 18px; margin-right: 12px; accent-color: var(--success); cursor: pointer; flex-shrink: 0; }
+        .checkbox-option .option-details { flex: 1; min-width: 0; }
+        .checkbox-option .option-name { font-size: 13px; font-weight: 500; color: var(--navy); }
+        .checkbox-option .option-price { font-size: 13px; font-weight: 600; color: var(--gold-dark); min-width: 80px; text-align: right; }
+        .checkbox-option .option-price.tbd { color: var(--warning); font-style: italic; }
+        .checkbox-option .qty-control { margin: 0 15px; }
+        .checkbox-option .qty-control input { width: 55px; padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: 4px; text-align: center; font-size: 13px; font-weight: 500; }
+        .checkbox-option .qty-control input:focus { outline: none; border-color: var(--gold); }
+        .checkbox-option .option-extended { font-size: 14px; font-weight: 700; color: var(--success); min-width: 90px; text-align: right; }
+        .checkbox-option .option-extended .tbd { color: var(--warning); font-style: italic; font-weight: 500; }
+        
+        /* TBD Price Input */
+        .tbd-price-input { width: 80px; padding: 4px 8px; border: 2px solid var(--warning); border-radius: 4px; font-size: 12px; font-weight: 600; text-align: right; background: #fffbeb; color: var(--navy-dark); }
+        .tbd-price-input:focus { outline: none; border-color: var(--gold); background: #fff; }
+        .tbd-price-input::placeholder { color: #b45309; font-style: italic; }
+        .tbd-input-wrapper { display: flex; align-items: center; gap: 4px; }
+        .tbd-input-wrapper span { color: var(--warning); font-weight: 600; }
+        
+        /* Custom Item Input */
+        .custom-item-row { display: flex; gap: 8px; padding: 10px 12px; background: #f0fdf4; border-top: 1px dashed #86efac; margin-top: 5px; border-radius: 0 0 8px 8px; align-items: center; }
+        .custom-item-row input[type="text"] { flex: 1; padding: 8px 12px; border: 1px solid #86efac; border-radius: 4px; font-size: 13px; }
+        .custom-item-row input[type="text"]:focus { outline: none; border-color: var(--success); }
+        .custom-item-row input[type="number"] { width: 70px; padding: 8px; border: 1px solid #86efac; border-radius: 4px; font-size: 13px; text-align: center; }
+        .custom-item-row input[type="number"]:focus { outline: none; border-color: var(--success); }
+        .custom-item-row .add-btn { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap; }
+        .custom-item-row .add-btn:hover { background: #15803d; }
+        .custom-item-row .price-input { width: 90px; }
+        .custom-item-label { font-size: 11px; color: #16a34a; font-weight: 600; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -286,17 +359,21 @@
         <div id="page2" class="page">
             <div class="layout">
                 <div>
-                    <div class="info-banner">
-                        <span class="icon">ℹ️</span>
-                        <div class="text">
-                            <strong>Accessories shown are specific to your selected boat type and size.</strong>
-                            Items marked "TBD" have pricing to be determined. Items not available for your boat size are hidden.
+                    <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:15px;">
+                        <div class="info-banner" style="flex:1;margin-bottom:0;">
+                            <span class="icon">ℹ️</span>
+                            <div class="text">
+                                <strong>Accessories shown are specific to your selected boat type and size.</strong>
+                            </div>
                         </div>
+                        <button class="btn btn-secondary" style="padding:8px 16px;font-size:11px;white-space:nowrap;" onclick="toggleAllCategories()" id="toggleAllBtn">
+                            ▲ Collapse All
+                        </button>
                     </div>
                     <div class="card">
                         <div class="card-header">
                             <h2>Configure Your Boat</h2>
-                            <span style="color:var(--gold);font-size:12px;" id="selectedBoatLabel">-</span>
+                            <span style="color:white;font-size:12px;font-weight:600;" id="selectedBoatLabel">-</span>
                         </div>
                         <div class="card-body" style="padding:0;">
                             <div id="categoriesContainer"></div>
@@ -333,6 +410,7 @@
                             <div class="form-grid">
                                 <div class="form-group" style="grid-column: span 2;"><label>Quotation Title</label><input type="text" id="quoteTitle" placeholder="e.g., 12m Aluminum RIB Boats" autocomplete="off"></div>
                                 <div class="form-group"><label>Quote Number</label><input type="text" id="quoteNum" value="ASIS-25-0001" onchange="document.getElementById('quoteBadge').textContent=this.value" autocomplete="off"></div>
+                                <div class="form-group"><label>Boat Quantity</label><input type="number" id="boatQty" value="1" min="1" max="100" onchange="updateTotals()"></div>
                                 <div class="form-group"><label>Date</label><input type="date" id="quoteDate"></div>
                                 <div class="form-group"><label>Validity</label><select id="validity"><option selected>30 Days</option><option>90 Days</option></select></div>
                                 <div class="form-group"><label>Salesman</label><select id="salesman"><option value="">-- Select Salesman --</option><option value="mario">Mario Hoyek</option><option value="soufiane">Soufiane Tangi</option><option value="toji">Toji Paul</option></select></div>
@@ -487,6 +565,20 @@ const BOATS = {
 
 // Accessories by boat type - from Excel price list
 // Each item has prices object keyed by size, with values: number, "X" (unavailable), "TBD", or "Incl."
+// Define which categories are EXCLUSIVE (radio buttons - only one selection allowed)
+const EXCLUSIVE_CATEGORIES = [
+    "Propulsion / Engine",
+    "Cabin / T-Top",
+    "Leaning Posts",
+    "A-Frame",
+    "Life Jackets",
+    "Trailers",
+    "GPS",
+    "Radar",
+    "VHF",
+    "FLIR / Thermal"
+];
+
 const ACCESSORIES = {
     aluminum: {
         "Propulsion / Engine": [
@@ -497,7 +589,7 @@ const ACCESSORIES = {
             {name: "Triple Mercury Verado F300 V8 XL/CXL (DTS, Vessel View 702)", prices: {"6.5M":"X","7.6M":"X","8.5M":"X","9.5M":"X","11.5M":"X","13M":114950}},
             {name: "Triple Mercury F400 V10 XL/CXL (DTS, Vessel View 502)", prices: {"6.5M":"X","7.6M":"X","8.5M":"X","9.5M":"X","11.5M":"X","13M":166180}}
         ],
-        "Customization": [
+        "General": [
             {name: "Boat Painting", prices: {"6.5M":17000,"7.6M":20000,"8.5M":22000,"9.5M":25500,"11.5M":30000,"13M":32000}},
             {name: "Custom Color Hypalon", prices: {"6.5M":2500,"7.6M":3000,"8.5M":3500,"9.5M":4000,"11.5M":4500,"13M":5000}},
             {name: "Double Layer Hypalon", prices: {"6.5M":15340,"7.6M":17500,"8.5M":20000,"9.5M":22420,"11.5M":27000,"13M":28320}},
@@ -505,10 +597,17 @@ const ACCESSORIES = {
             {name: "Hypalon Branding And Numbering", prices: {"6.5M":700,"7.6M":800,"8.5M":900,"9.5M":1000,"11.5M":1100,"13M":1100}},
             {name: "Extra Handle", prices: {"6.5M":250,"7.6M":250,"8.5M":250,"9.5M":250,"11.5M":250,"13M":250}},
             {name: "Diver-Notch", prices: {"6.5M":9800,"7.6M":9800,"8.5M":9800,"9.5M":9800,"11.5M":9800,"13M":9800}},
-            {name: "Notch Filling Inserts", prices: {"6.5M":2500,"7.6M":2500,"8.5M":2500,"9.5M":2500,"11.5M":3500,"13M":3500}}
+            {name: "Notch Filling Inserts", prices: {"6.5M":2500,"7.6M":2500,"8.5M":2500,"9.5M":2500,"11.5M":3500,"13M":3500}},
+            {name: "Bow Step with 2 Stainless Steel Cleats", prices: {"6.5M":545,"7.6M":545,"8.5M":545,"9.5M":545,"11.5M":545,"13M":545}},
+            {name: "Aluminium Anchor with S.S Chain", prices: {"6.5M":1075,"7.6M":1075,"8.5M":1075,"9.5M":1075,"11.5M":1075,"13M":1075}},
+            {name: "Aluminium Anchor with Rope 30m", prices: {"6.5M":390,"7.6M":390,"8.5M":390,"9.5M":390,"11.5M":390,"13M":390}},
+            {name: "Windless Clipper with S.S Chain & Anchor", prices: {"6.5M":5360,"7.6M":5360,"8.5M":5360,"9.5M":5360,"11.5M":5360,"13M":5360}},
+            {name: "Boat Cover", prices: {"6.5M":2500,"7.6M":4000,"8.5M":4500,"9.5M":5000,"11.5M":5500,"13M":5500}}
         ],
-        "Consoles, Cabins & T-Tops": [
-            {name: "Aluminium Console with Windscreen and Grab Rail", prices: {"6.5M":10115,"7.6M":10115,"8.5M":10500,"9.5M":11200,"11.5M":12000,"13M":12000}},
+        "Console": [
+            {name: "Aluminium Console with Windscreen and Grab Rail", prices: {"6.5M":10115,"7.6M":10115,"8.5M":10500,"9.5M":11200,"11.5M":12000,"13M":12000}}
+        ],
+        "Cabin / T-Top": [
             {name: "Aluminum Cabin with Cuddy and Toilet", prices: {"6.5M":"X","7.6M":"X","8.5M":"X","9.5M":79570,"11.5M":79570,"13M":79570}},
             {name: "Aluminum Cabin for 4 Pax", prices: {"6.5M":"X","7.6M":"X","8.5M":"X","9.5M":"TBD","11.5M":"TBD","13M":"TBD"}},
             {name: "Aluminum Wheel-house", prices: {"6.5M":19115,"7.6M":19115,"8.5M":21000,"9.5M":21000,"11.5M":24000,"13M":24000}},
@@ -516,26 +615,28 @@ const ACCESSORIES = {
             {name: "Aluminium T-Top with Hard Top 2 (3.8m)", prices: {"6.5M":14920,"7.6M":14920,"8.5M":14920,"9.5M":14920,"11.5M":14920,"13M":14920}},
             {name: "Aluminium T-Top with Hard Top 3 (4.4m)", prices: {"6.5M":"X","7.6M":"X","8.5M":"X","9.5M":"X","11.5M":32000,"13M":32000}}
         ],
-        "Seating - Leaning Posts": [
+        "Leaning Posts": [
             {name: "Aluminium Leaning Post Single", prices: {"6.5M":2765,"7.6M":2765,"8.5M":2765,"9.5M":2765,"11.5M":2765,"13M":2765}},
             {name: "Aluminium Leaning Post with Back Rest Single", prices: {"6.5M":3310,"7.6M":3310,"8.5M":3310,"9.5M":3310,"11.5M":3310,"13M":3310}},
             {name: "Aluminium Leaning Post Double", prices: {"6.5M":3400,"7.6M":3400,"8.5M":3400,"9.5M":3400,"11.5M":3400,"13M":3400}},
             {name: "Aluminium Leaning Post with Back Rest Double", prices: {"6.5M":4000,"7.6M":4000,"8.5M":4000,"9.5M":4000,"11.5M":4000,"13M":4000}}
         ],
-        "Seating - Jockey & Grab Rail": [
+        "Jockey & Grab Rail": [
             {name: "Grab Rail for Front Seat", prices: {"6.5M":650,"7.6M":650,"8.5M":650,"9.5M":650,"11.5M":650,"13M":650}},
             {name: "Single Aluminium Jockey Seat with Grab Rail", prices: {"6.5M":1270,"7.6M":1270,"8.5M":1270,"9.5M":1270,"11.5M":1270,"13M":1270}},
             {name: "Double Aluminium Jockey Seat with Grab Rail", prices: {"6.5M":2535,"7.6M":2535,"8.5M":2535,"9.5M":2535,"11.5M":2535,"13M":2535}}
         ],
-        "Seating - Suspension": [
+        "Suspension Seats": [
             {name: "Ullman BISCAYA Jockey Suspension Seat", prices: {"6.5M":5500,"7.6M":5500,"8.5M":5500,"9.5M":5500,"11.5M":5500,"13M":5500}},
             {name: "Ullman Patrol Jockey Suspension Seat", prices: {"6.5M":6250,"7.6M":6250,"8.5M":6250,"9.5M":6250,"11.5M":6250,"13M":6250}},
             {name: "Echelon Midback Jockey Suspension Seat", prices: {"6.5M":16300,"7.6M":16300,"8.5M":16300,"9.5M":16300,"11.5M":16300,"13M":16300}}
         ],
-        "Frames & Structure": [
+        "A-Frame": [
             {name: "Aluminium A Frame", prices: {"6.5M":2885,"7.6M":2885,"8.5M":2885,"9.5M":2885,"11.5M":3260,"13M":3260}},
             {name: "Aluminium A Frame With Self-righting System", prices: {"6.5M":9730,"7.6M":9730,"8.5M":9730,"9.5M":9730,"11.5M":10140,"13M":10140}},
-            {name: "Aluminium A Frame with Ladder", prices: {"6.5M":4300,"7.6M":4300,"8.5M":4300,"9.5M":4300,"11.5M":4675,"13M":4675}},
+            {name: "Aluminium A Frame with Ladder", prices: {"6.5M":4300,"7.6M":4300,"8.5M":4300,"9.5M":4300,"11.5M":4675,"13M":4675}}
+        ],
+        "Other Frames & Structure": [
             {name: "Aluminium Tube Ladder", prices: {"6.5M":2500,"7.6M":2500,"8.5M":2500,"9.5M":2500,"11.5M":2500,"13M":2500}},
             {name: "Swim Platform at Transom for Inboard Engine", prices: {"6.5M":1285,"7.6M":1285,"8.5M":1285,"9.5M":1285,"11.5M":1285,"13M":1285}},
             {name: "Aluminium Bow Tow Post", prices: {"6.5M":2230,"7.6M":2230,"8.5M":2230,"9.5M":2230,"11.5M":2230,"13M":2230}},
@@ -544,11 +645,11 @@ const ACCESSORIES = {
             {name: "Bow HD Tow Post w/Weapons Mount Flange", prices: {"6.5M":7000,"7.6M":7000,"8.5M":7000,"9.5M":7000,"11.5M":7000,"13M":7000}},
             {name: "Aft HD Tow Post w/Weapons Mount Flange", prices: {"6.5M":7000,"7.6M":7000,"8.5M":7000,"9.5M":7000,"11.5M":7000,"13M":7000}}
         ],
-        "Safety Equipment": [
-            {name: "Bow Step with 2 Stainless Steel Cleats", prices: {"6.5M":545,"7.6M":545,"8.5M":545,"9.5M":545,"11.5M":545,"13M":545}},
-            {name: "Aluminium Anchor with S.S Chain", prices: {"6.5M":1075,"7.6M":1075,"8.5M":1075,"9.5M":1075,"11.5M":1075,"13M":1075}},
-            {name: "Aluminium Anchor with Rope 30m", prices: {"6.5M":390,"7.6M":390,"8.5M":390,"9.5M":390,"11.5M":390,"13M":390}},
-            {name: "Windless Clipper with S.S Chain & Anchor", prices: {"6.5M":5360,"7.6M":5360,"8.5M":5360,"9.5M":5360,"11.5M":5360,"13M":5360}},
+        "Life Jackets": [
+            {name: "Life Jacket SOLAS Foam with Flashlight 170N", prices: {"6.5M":85,"7.6M":85,"8.5M":85,"9.5M":85,"11.5M":85,"13M":85}},
+            {name: "Life Jacket Manual Inflatable 170N", prices: {"6.5M":120,"7.6M":120,"8.5M":120,"9.5M":120,"11.5M":120,"13M":120}}
+        ],
+        "Other Safety": [
             {name: "Distress Signal Kit for Coastal Navigation", prices: {"6.5M":200,"7.6M":200,"8.5M":200,"9.5M":200,"11.5M":200,"13M":200}},
             {name: "2x Fire Extinguisher (2Kg) IAW COLREGS", prices: {"6.5M":300,"7.6M":300,"8.5M":300,"9.5M":300,"11.5M":300,"13M":300}},
             {name: "2x 20\" USCG Approved Ring Buoy IAW COLREGS", prices: {"6.5M":160,"7.6M":160,"8.5M":160,"9.5M":160,"11.5M":160,"13M":160}},
@@ -557,29 +658,44 @@ const ACCESSORIES = {
             {name: "Forward Deck Mounted Boarding Team Hand Railing", prices: {"6.5M":5200,"7.6M":5200,"8.5M":5200,"9.5M":5200,"11.5M":5200,"13M":5200}},
             {name: "Single Hoisting Lifting System", prices: {"6.5M":19500,"7.6M":19500,"8.5M":19500,"9.5M":19500,"11.5M":19500,"13M":19500}},
             {name: "Fire Extinguisher Compartment", prices: {"6.5M":310,"7.6M":310,"8.5M":310,"9.5M":310,"11.5M":310,"13M":310}},
-            {name: "Boat Cover", prices: {"6.5M":2500,"7.6M":4000,"8.5M":4500,"9.5M":5000,"11.5M":5500,"13M":5500}},
             {name: "Anti-fouling Hull Bottom Paint", prices: {"6.5M":2575,"7.6M":3140,"8.5M":3460,"9.5M":3750,"11.5M":4275,"13M":4500}},
             {name: "Life Ring", prices: {"6.5M":110,"7.6M":110,"8.5M":110,"9.5M":110,"11.5M":110,"13M":110}},
-            {name: "Dive Bottle Rack (6 Bottles)", prices: {"6.5M":3250,"7.6M":3250,"8.5M":3250,"9.5M":3250,"11.5M":3250,"13M":3250}},
-            {name: "Life Jacket SOLAS Foam with Flashlight 170N", prices: {"6.5M":85,"7.6M":85,"8.5M":85,"9.5M":85,"11.5M":85,"13M":85}},
-            {name: "Life Jacket Manual Inflatable 170N", prices: {"6.5M":120,"7.6M":120,"8.5M":120,"9.5M":120,"11.5M":120,"13M":120}}
+            {name: "Dive Bottle Rack (6 Bottles)", prices: {"6.5M":3250,"7.6M":3250,"8.5M":3250,"9.5M":3250,"11.5M":3250,"13M":3250}}
         ],
-        "Navigation": [
+        "Protection & Guards": [
+            {name: "Aluminium Bow Guard with Pushing Knee", prices: {"6.5M":8110,"7.6M":8110,"8.5M":8110,"9.5M":8110,"11.5M":8110,"13M":8110}},
+            {name: "PE Filled Foam - Pushing Knee", prices: {"6.5M":4400,"7.6M":4400,"8.5M":4400,"9.5M":4400,"11.5M":4400,"13M":4400}},
+            {name: "HD Aluminium Engine Guard", prices: {"6.5M":2800,"7.6M":2800,"8.5M":2800,"9.5M":2800,"11.5M":2800,"13M":2800}},
+            {name: "Propeller Guard", prices: {"6.5M":1680,"7.6M":1680,"8.5M":1680,"9.5M":1680,"11.5M":1680,"13M":1680}},
+            {name: "Wooden Pallet with Shrink-Wrap Packaging", prices: {"6.5M":1430,"7.6M":1430,"8.5M":1430,"9.5M":1430,"11.5M":1430,"13M":1430}}
+        ],
+        "Trailers": [
+            {name: "Galvanized Steel Single Axis Trailer (Without Brakes)", prices: {"6.5M":5000,"7.6M":6000,"8.5M":"X","9.5M":"X","11.5M":"X","13M":"X"}},
+            {name: "Galvanized Steel Double Trailer (Without Brakes)", prices: {"6.5M":"X","7.6M":"X","8.5M":7000,"9.5M":8000,"11.5M":"X","13M":"X"}},
+            {name: "Galvanized Steel Triple Trailer (Without Brakes)", prices: {"6.5M":"X","7.6M":"X","8.5M":"X","9.5M":"X","11.5M":10000,"13M":10000}}
+        ],
+        "GPS": [
             {name: "GARMIN GPSMAP 923 XSV 9\" MFD with Sonar", prices: {"6.5M":2270,"7.6M":2270,"8.5M":2270,"9.5M":2270,"11.5M":2270,"13M":2270}},
             {name: "GARMIN GPSMAP 8410 XSV 10\" MFD with Sonar", prices: {"6.5M":4400,"7.6M":4400,"8.5M":4400,"9.5M":4400,"11.5M":4400,"13M":4400}},
-            {name: "GARMIN GPSMAP 8410 10\" MFD W/O Sonar", prices: {"6.5M":3500,"7.6M":3500,"8.5M":3500,"9.5M":3500,"11.5M":3500,"13M":3500}},
+            {name: "GARMIN GPSMAP 8410 10\" MFD W/O Sonar", prices: {"6.5M":3500,"7.6M":3500,"8.5M":3500,"9.5M":3500,"11.5M":3500,"13M":3500}}
+        ],
+        "Radar": [
             {name: "GARMIN GMR 18HD+ 18NM Radar Scanner", prices: {"6.5M":2200,"7.6M":2200,"8.5M":2200,"9.5M":2200,"11.5M":2200,"13M":2200}},
             {name: "GARMIN GMR Fantom 18x Dome Radar", prices: {"6.5M":2600,"7.6M":2600,"8.5M":2600,"9.5M":2600,"11.5M":2600,"13M":2600}}
         ],
-        "Communication": [
+        "VHF": [
             {name: "Garmin 115i VHF Radio with Antenna", prices: {"6.5M":750,"7.6M":750,"8.5M":750,"9.5M":750,"11.5M":750,"13M":750}},
-            {name: "Garmin 215i AIS VHF Radio with Antenna", prices: {"6.5M":1200,"7.6M":1200,"8.5M":1200,"9.5M":1200,"11.5M":1200,"13M":1200}},
+            {name: "Garmin 215i AIS VHF Radio with Antenna", prices: {"6.5M":1200,"7.6M":1200,"8.5M":1200,"9.5M":1200,"11.5M":1200,"13M":1200}}
+        ],
+        "Other Communication": [
             {name: "Whelen Siren/PA System IAW COLREGS", prices: {"6.5M":1100,"7.6M":1100,"8.5M":1100,"9.5M":1100,"11.5M":1100,"13M":1100}},
             {name: "Signal Horn 12VDC IAW COLREGS", prices: {"6.5M":250,"7.6M":250,"8.5M":250,"9.5M":250,"11.5M":250,"13M":250}}
         ],
-        "Lighting & Electrical": [
+        "FLIR / Thermal": [
             {name: "FLIR M232 Thermal Camera (320x240, 9Hz)", prices: {"6.5M":6500,"7.6M":6500,"8.5M":6500,"9.5M":6500,"11.5M":6500,"13M":6500}},
-            {name: "FLIR M364C Gyro Stabilized Thermal IP Camera", prices: {"6.5M":27000,"7.6M":27000,"8.5M":27000,"9.5M":27000,"11.5M":27000,"13M":27000}},
+            {name: "FLIR M364C Gyro Stabilized Thermal IP Camera", prices: {"6.5M":27000,"7.6M":27000,"8.5M":27000,"9.5M":27000,"11.5M":27000,"13M":27000}}
+        ],
+        "Lighting & Electrical": [
             {name: "STL K-FORCE LED Law Enforcement Light Bar", prices: {"6.5M":1500,"7.6M":1500,"8.5M":1500,"9.5M":1500,"11.5M":1500,"13M":1500}},
             {name: "Remote Search Light ACR RCL 95 w/Joystick", prices: {"6.5M":1050,"7.6M":1050,"8.5M":1050,"9.5M":1050,"11.5M":1050,"13M":1050}},
             {name: "LED Flood Lights / Scene-Lights (4 pieces)", prices: {"6.5M":800,"7.6M":800,"8.5M":800,"9.5M":800,"11.5M":800,"13M":800}},
@@ -589,13 +705,6 @@ const ACCESSORIES = {
             {name: "BLUE SEA Accessory Receptacle 12VDC", prices: {"6.5M":75,"7.6M":75,"8.5M":75,"9.5M":75,"11.5M":75,"13M":75}},
             {name: "BLUE SEA 12VDC Dual USB Charging Outlets", prices: {"6.5M":100,"7.6M":100,"8.5M":100,"9.5M":100,"11.5M":100,"13M":100}},
             {name: "Plastimo Flush Mount Offshore Compass 95", prices: {"6.5M":380,"7.6M":380,"8.5M":380,"9.5M":380,"11.5M":380,"13M":380}}
-        ],
-        "Protection & Guards": [
-            {name: "Aluminium Bow Guard with Pushing Knee", prices: {"6.5M":8110,"7.6M":8110,"8.5M":8110,"9.5M":8110,"11.5M":8110,"13M":8110}},
-            {name: "PE Filled Foam - Pushing Knee", prices: {"6.5M":4400,"7.6M":4400,"8.5M":4400,"9.5M":4400,"11.5M":4400,"13M":4400}},
-            {name: "HD Aluminium Engine Guard", prices: {"6.5M":2800,"7.6M":2800,"8.5M":2800,"9.5M":2800,"11.5M":2800,"13M":2800}},
-            {name: "Propeller Guard", prices: {"6.5M":1680,"7.6M":1680,"8.5M":1680,"9.5M":1680,"11.5M":1680,"13M":1680}},
-            {name: "Wooden Pallet with Shrink-Wrap Packaging", prices: {"6.5M":1430,"7.6M":1430,"8.5M":1430,"9.5M":1430,"11.5M":1430,"13M":1430}}
         ]
     },
     fiberglass: {
@@ -607,7 +716,7 @@ const ACCESSORIES = {
             {name: "Triple Mercury Verado F300 V8 XL/CXL (DTS, Vessel View 702)", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"X","7.2M":"X","8.0M":114950,"8.5M":114950,"9.5M":114950,"12M":114950}},
             {name: "Triple Mercury F400 V10 XL/CXL (DTS, Vessel View 502)", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"X","7.2M":"X","8.0M":166180,"8.5M":166180,"9.5M":166180,"12M":166180}}
         ],
-        "Customization": [
+        "General": [
             {name: "Hybrid Foam-Filled Tube-Set", prices: {"4.1M":9880,"5.1M":12010,"5.5M":12955,"6.5M":15310,"7.2M":16960,"8.0M":18840,"8.5M":20608,"9.5M":22375,"12M":29300}},
             {name: "Custom Color Hypalon", prices: {"4.1M":2500,"5.1M":3000,"5.5M":3500,"6.5M":4000,"7.2M":4500,"8.0M":5000,"8.5M":5000,"9.5M":5000,"12M":5000}},
             {name: "Double Layer Hypalon", prices: {"4.1M":15340,"5.1M":17500,"5.5M":20000,"6.5M":22420,"7.2M":27000,"8.0M":28320,"8.5M":28320,"9.5M":28320,"12M":28320}},
@@ -616,9 +725,14 @@ const ACCESSORIES = {
             {name: "Hypalon Branding And Numbering", prices: {"4.1M":700,"5.1M":700,"5.5M":700,"6.5M":700,"7.2M":700,"8.0M":700,"8.5M":700,"9.5M":700,"12M":700}},
             {name: "Extra Handle", prices: {"4.1M":50,"5.1M":50,"5.5M":50,"6.5M":50,"7.2M":50,"8.0M":50,"8.5M":50,"9.5M":50,"12M":50}},
             {name: "Diver-Notch", prices: {"4.1M":3200,"5.1M":3200,"5.5M":3200,"6.5M":3200,"7.2M":3200,"8.0M":3200,"8.5M":3200,"9.5M":3200,"12M":3200}},
-            {name: "Notch Filling Inserts", prices: {"4.1M":2500,"5.1M":2500,"5.5M":2500,"6.5M":2500,"7.2M":3500,"8.0M":3500,"8.5M":3500,"9.5M":3500,"12M":3500}}
+            {name: "Notch Filling Inserts", prices: {"4.1M":2500,"5.1M":2500,"5.5M":2500,"6.5M":2500,"7.2M":3500,"8.0M":3500,"8.5M":3500,"9.5M":3500,"12M":3500}},
+            {name: "Bow Step with 2 Stainless Steel Cleats", prices: {"4.1M":545,"5.1M":545,"5.5M":545,"6.5M":545,"7.2M":545,"8.0M":545,"8.5M":545,"9.5M":545,"12M":545}},
+            {name: "Aluminium Anchor with S.S Chain", prices: {"4.1M":1075,"5.1M":1075,"5.5M":1075,"6.5M":1075,"7.2M":1075,"8.0M":1075,"8.5M":1075,"9.5M":1075,"12M":1075}},
+            {name: "Aluminium Anchor with Rope 30m", prices: {"4.1M":390,"5.1M":390,"5.5M":390,"6.5M":390,"7.2M":390,"8.0M":390,"8.5M":390,"9.5M":390,"12M":390}},
+            {name: "Windless Clipper with S.S Chain & Anchor", prices: {"4.1M":5360,"5.1M":5360,"5.5M":5360,"6.5M":5360,"7.2M":5360,"8.0M":5360,"8.5M":5360,"9.5M":5360,"12M":5360}},
+            {name: "Boat Cover", prices: {"4.1M":2500,"5.1M":4000,"5.5M":4500,"6.5M":5000,"7.2M":5500,"8.0M":5500,"8.5M":5500,"9.5M":5500,"12M":5500}}
         ],
-        "Consoles, Cabins & T-Tops": [
+        "Console": [
             {name: "Single Futura Console with Forward Seat", prices: {"4.1M":"X","5.1M":4610,"5.5M":4610,"6.5M":4610,"7.2M":4610,"8.0M":4610,"8.5M":4610,"9.5M":4610,"12M":4610}},
             {name: "Single Futura Console without Forward Seat", prices: {"4.1M":"X","5.1M":3647,"5.5M":3647,"6.5M":3647,"7.2M":3647,"8.0M":3647,"8.5M":3647,"9.5M":3647,"12M":3647}},
             {name: "Double Futura Console with Forward Seat - Low Rail", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":6380,"7.2M":6380,"8.0M":6380,"8.5M":6380,"9.5M":6380,"12M":6380}},
@@ -630,7 +744,9 @@ const ACCESSORIES = {
             {name: "Double Console with Toilet", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"X","7.2M":"X","8.0M":23570,"8.5M":23570,"9.5M":23570,"12M":23570}},
             {name: "Beachlander Console", prices: {"4.1M":"X","5.1M":2590,"5.5M":2590,"6.5M":2590,"7.2M":2590,"8.0M":2590,"8.5M":2590,"9.5M":2590,"12M":2590}},
             {name: "Jockey Seat Console", prices: {"4.1M":3480,"5.1M":3480,"5.5M":3480,"6.5M":3480,"7.2M":3480,"8.0M":3480,"8.5M":3480,"9.5M":3480,"12M":3480}},
-            {name: "Mamba Console", prices: {"4.1M":"X","5.1M":3290,"5.5M":3290,"6.5M":"X","7.2M":"X","8.0M":"X","8.5M":"X","9.5M":"X","12M":"X"}},
+            {name: "Mamba Console", prices: {"4.1M":"X","5.1M":3290,"5.5M":3290,"6.5M":"X","7.2M":"X","8.0M":"X","8.5M":"X","9.5M":"X","12M":"X"}}
+        ],
+        "Cabin / T-Top": [
             {name: "Aluminum Cabin for 4 PAX", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"TBD","7.2M":"TBD","8.0M":"TBD","8.5M":"TBD","9.5M":"TBD","12M":"TBD"}},
             {name: "Aluminum Cabin with Cuddy and Toilet", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"X","7.2M":"X","8.0M":"X","8.5M":"X","9.5M":79570,"12M":79570}},
             {name: "Aluminum Wheel-house", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"X","7.2M":"X","8.0M":19200,"8.5M":19200,"9.5M":19200,"12M":19200}},
@@ -642,20 +758,20 @@ const ACCESSORIES = {
             {name: "Aluminium Foldable T-Top", prices: {"4.1M":"X","5.1M":10615,"5.5M":10615,"6.5M":10615,"7.2M":10615,"8.0M":10615,"8.5M":10615,"9.5M":10615,"12M":10615}},
             {name: "Extended Canopy to A-Frame", prices: {"4.1M":"X","5.1M":655,"5.5M":655,"6.5M":655,"7.2M":655,"8.0M":655,"8.5M":655,"9.5M":655,"12M":655}}
         ],
-        "Seating - Leaning Posts": [
+        "Leaning Posts": [
             {name: "Leaning Post Single", prices: {"4.1M":"X","5.1M":2765,"5.5M":2765,"6.5M":2765,"7.2M":2765,"8.0M":2765,"8.5M":2765,"9.5M":2765,"12M":2765}},
             {name: "Leaning Post with Back Rest Single", prices: {"4.1M":"X","5.1M":3310,"5.5M":3310,"6.5M":3310,"7.2M":3310,"8.0M":3310,"8.5M":3310,"9.5M":3310,"12M":3310}},
             {name: "Leaning Post Double", prices: {"4.1M":"X","5.1M":3400,"5.5M":3400,"6.5M":3400,"7.2M":3400,"8.0M":3400,"8.5M":3400,"9.5M":3400,"12M":3400}},
             {name: "Leaning Post With Back Rest Double", prices: {"4.1M":"X","5.1M":4000,"5.5M":4000,"6.5M":4000,"7.2M":4000,"8.0M":4000,"8.5M":4000,"9.5M":4000,"12M":4000}},
             {name: "Fiber Glass Leaning Post with Back Rest - Single", prices: {"4.1M":"X","5.1M":"X","5.5M":9000,"6.5M":9000,"7.2M":9000,"8.0M":9000,"8.5M":9000,"9.5M":9000,"12M":9000}}
         ],
-        "Seating - Jockey & Straddle": [
+        "Jockey & Straddle": [
             {name: "Grab Rail for Front Seat", prices: {"4.1M":650,"5.1M":650,"5.5M":650,"6.5M":650,"7.2M":650,"8.0M":650,"8.5M":650,"9.5M":650,"12M":650}},
             {name: "Straddle Seat with Handle", prices: {"4.1M":1980,"5.1M":1980,"5.5M":1980,"6.5M":1980,"7.2M":1980,"8.0M":1980,"8.5M":1980,"9.5M":1980,"12M":1980}},
             {name: "Single GRP Jockey Seat with Back Rail", prices: {"4.1M":1700,"5.1M":1700,"5.5M":1700,"6.5M":1700,"7.2M":1700,"8.0M":1700,"8.5M":1700,"9.5M":1700,"12M":1700}},
             {name: "Double GRP Jockey Seat with Back Rail", prices: {"4.1M":3400,"5.1M":3400,"5.5M":3400,"6.5M":3400,"7.2M":3400,"8.0M":3400,"8.5M":3400,"9.5M":3400,"12M":3400}}
         ],
-        "Seating - Bench Seats": [
+        "Bench Seats": [
             {name: "Painted Aluminum Bench Seat 1 PAX with Storage", prices: {"4.1M":4420,"5.1M":4420,"5.5M":4420,"6.5M":4420,"7.2M":4420,"8.0M":4420,"8.5M":4420,"9.5M":4420,"12M":4420}},
             {name: "S.S. Bench Seat 1 PAX with Storage", prices: {"4.1M":5530,"5.1M":5530,"5.5M":5530,"6.5M":5530,"7.2M":5530,"8.0M":5530,"8.5M":5530,"9.5M":5530,"12M":5530}},
             {name: "Painted Aluminum Bench Seat 2 PAX with Storage", prices: {"4.1M":5150,"5.1M":5150,"5.5M":5150,"6.5M":5150,"7.2M":5150,"8.0M":5150,"8.5M":5150,"9.5M":5150,"12M":5150}},
@@ -665,15 +781,17 @@ const ACCESSORIES = {
             {name: "Painted Aluminum Bench Seat 4 PAX with Storage", prices: {"4.1M":8360,"5.1M":8360,"5.5M":8360,"6.5M":8360,"7.2M":8360,"8.0M":8360,"8.5M":8360,"9.5M":8360,"12M":8360}},
             {name: "S.S. Bench Seat 4 PAX with Storage", prices: {"4.1M":8350,"5.1M":8350,"5.5M":8350,"6.5M":8350,"7.2M":8350,"8.0M":8350,"8.5M":8350,"9.5M":8350,"12M":8350}}
         ],
-        "Seating - Suspension": [
+        "Suspension Seats": [
             {name: "Ullman BISCAYA Jockey Suspension Seat", prices: {"4.1M":5500,"5.1M":5500,"5.5M":5500,"6.5M":5500,"7.2M":5500,"8.0M":5500,"8.5M":5500,"9.5M":5500,"12M":5500}},
             {name: "Ullman Patrol Jockey Suspension Seat", prices: {"4.1M":6250,"5.1M":6250,"5.5M":6250,"6.5M":6250,"7.2M":6250,"8.0M":6250,"8.5M":6250,"9.5M":6250,"12M":6250}},
             {name: "Echelon Midback Jockey Suspension Seat", prices: {"4.1M":16300,"5.1M":16300,"5.5M":16300,"6.5M":16300,"7.2M":16300,"8.0M":16300,"8.5M":16300,"9.5M":16300,"12M":16300}}
         ],
-        "Frames & Structure": [
+        "A-Frame": [
             {name: "Aluminium A Frame", prices: {"4.1M":2885,"5.1M":2885,"5.5M":2885,"6.5M":2885,"7.2M":3260,"8.0M":3260,"8.5M":3400,"9.5M":3400,"12M":3600}},
             {name: "Aluminium A Frame With Self-righting System", prices: {"4.1M":9730,"5.1M":9730,"5.5M":9730,"6.5M":9730,"7.2M":10140,"8.0M":10140,"8.5M":10500,"9.5M":10500,"12M":10800}},
-            {name: "Aluminium A Frame with Swim Platform and Ladder", prices: {"4.1M":4300,"5.1M":4300,"5.5M":4300,"6.5M":4300,"7.2M":4675,"8.0M":4675,"8.5M":4800,"9.5M":4800,"12M":5000}},
+            {name: "Aluminium A Frame with Swim Platform and Ladder", prices: {"4.1M":4300,"5.1M":4300,"5.5M":4300,"6.5M":4300,"7.2M":4675,"8.0M":4675,"8.5M":4800,"9.5M":4800,"12M":5000}}
+        ],
+        "Other Frames & Structure": [
             {name: "Aluminium Tube Ladder", prices: {"4.1M":2500,"5.1M":2500,"5.5M":2500,"6.5M":2500,"7.2M":2500,"8.0M":2500,"8.5M":2500,"9.5M":2500,"12M":2500}},
             {name: "Swim Platform at Transom for Inboard Engine", prices: {"4.1M":1285,"5.1M":1285,"5.5M":1285,"6.5M":1285,"7.2M":1285,"8.0M":1285,"8.5M":1285,"9.5M":1285,"12M":1285}},
             {name: "Bow Tow Post", prices: {"4.1M":2230,"5.1M":2230,"5.5M":2230,"6.5M":2230,"7.2M":2230,"8.0M":2230,"8.5M":2230,"9.5M":2230,"12M":2230}},
@@ -682,49 +800,20 @@ const ACCESSORIES = {
             {name: "Bow HD Tow Post w/Weapons Mount Flange", prices: {"4.1M":7000,"5.1M":7000,"5.5M":7000,"6.5M":7000,"7.2M":7000,"8.0M":7000,"8.5M":7000,"9.5M":7000,"12M":7000}},
             {name: "Aft HD Tow Post w/Weapons Mount Flange", prices: {"4.1M":7000,"5.1M":7000,"5.5M":7000,"6.5M":7000,"7.2M":7000,"8.0M":7000,"8.5M":7000,"9.5M":7000,"12M":7000}}
         ],
-        "Safety Equipment": [
-            {name: "Bow Step with 2 Stainless Steel Cleats", prices: {"4.1M":545,"5.1M":545,"5.5M":545,"6.5M":545,"7.2M":545,"8.0M":545,"8.5M":545,"9.5M":545,"12M":545}},
-            {name: "Aluminium Anchor with S.S Chain", prices: {"4.1M":1075,"5.1M":1075,"5.5M":1075,"6.5M":1075,"7.2M":1075,"8.0M":1075,"8.5M":1075,"9.5M":1075,"12M":1075}},
-            {name: "Aluminium Anchor with Rope 30m", prices: {"4.1M":390,"5.1M":390,"5.5M":390,"6.5M":390,"7.2M":390,"8.0M":390,"8.5M":390,"9.5M":390,"12M":390}},
-            {name: "Windless Clipper with S.S Chain & Anchor", prices: {"4.1M":5360,"5.1M":5360,"5.5M":5360,"6.5M":5360,"7.2M":5360,"8.0M":5360,"8.5M":5360,"9.5M":5360,"12M":5360}},
+        "Life Jackets": [
+            {name: "Life Jacket SOLAS Foam with Flashlight 170N", prices: {"4.1M":85,"5.1M":85,"5.5M":85,"6.5M":85,"7.2M":85,"8.0M":85,"8.5M":85,"9.5M":85,"12M":85}},
+            {name: "Life Jacket Manual Inflatable 170N", prices: {"4.1M":120,"5.1M":120,"5.5M":120,"6.5M":120,"7.2M":120,"8.0M":120,"8.5M":120,"9.5M":120,"12M":120}}
+        ],
+        "Other Safety": [
             {name: "Distress Signal Kit for Coastal Navigation", prices: {"4.1M":200,"5.1M":200,"5.5M":200,"6.5M":200,"7.2M":200,"8.0M":200,"8.5M":200,"9.5M":200,"12M":200}},
             {name: "2x Fire Extinguisher (2Kg) IAW COLREGS", prices: {"4.1M":300,"5.1M":300,"5.5M":300,"6.5M":300,"7.2M":300,"8.0M":300,"8.5M":300,"9.5M":300,"12M":300}},
             {name: "2x 20\" USCG Approved Ring Buoy IAW COLREGS", prices: {"4.1M":160,"5.1M":160,"5.5M":160,"6.5M":160,"7.2M":160,"8.0M":160,"8.5M":160,"9.5M":160,"12M":160}},
             {name: "2x Mooring Rope 12mm 20m", prices: {"4.1M":300,"5.1M":300,"5.5M":300,"6.5M":300,"7.2M":300,"8.0M":300,"8.5M":300,"9.5M":300,"12M":300}},
             {name: "2x Gunwale Mounted Boat Hook", prices: {"4.1M":150,"5.1M":150,"5.5M":150,"6.5M":150,"7.2M":150,"8.0M":150,"8.5M":150,"9.5M":150,"12M":150}},
             {name: "Single Hoisting Lifting System", prices: {"4.1M":15000,"5.1M":15000,"5.5M":15000,"6.5M":15000,"7.2M":19500,"8.0M":19500,"8.5M":19500,"9.5M":19500,"12M":19500}},
-            {name: "Boat Cover", prices: {"4.1M":2500,"5.1M":4000,"5.5M":4500,"6.5M":5000,"7.2M":5500,"8.0M":5500,"8.5M":5500,"9.5M":5500,"12M":5500}},
             {name: "Anti-fouling Hull Bottom Paint", prices: {"4.1M":2575,"5.1M":3140,"5.5M":3460,"6.5M":3750,"7.2M":4275,"8.0M":4500,"8.5M":4500,"9.5M":4500,"12M":4500}},
             {name: "Life Ring", prices: {"4.1M":110,"5.1M":110,"5.5M":110,"6.5M":110,"7.2M":110,"8.0M":110,"8.5M":110,"9.5M":110,"12M":110}},
-            {name: "Dive Bottle Rack (6 Bottles)", prices: {"4.1M":3250,"5.1M":3250,"5.5M":3250,"6.5M":3250,"7.2M":3250,"8.0M":3250,"8.5M":3250,"9.5M":3250,"12M":3250}},
-            {name: "Life Jacket SOLAS Foam with Flashlight 170N", prices: {"4.1M":85,"5.1M":85,"5.5M":85,"6.5M":85,"7.2M":85,"8.0M":85,"8.5M":85,"9.5M":85,"12M":85}},
-            {name: "Life Jacket Manual Inflatable 170N", prices: {"4.1M":120,"5.1M":120,"5.5M":120,"6.5M":120,"7.2M":120,"8.0M":120,"8.5M":120,"9.5M":120,"12M":120}}
-        ],
-        "Navigation": [
-            {name: "GARMIN GPSMAP 923 XSV 9\" MFD with Sonar", prices: {"4.1M":2270,"5.1M":2270,"5.5M":2270,"6.5M":2270,"7.2M":2270,"8.0M":2270,"8.5M":2270,"9.5M":2270,"12M":2270}},
-            {name: "GARMIN GPSMAP 8410 XSV 10\" MFD with Sonar", prices: {"4.1M":4400,"5.1M":4400,"5.5M":4400,"6.5M":4400,"7.2M":4400,"8.0M":4400,"8.5M":4400,"9.5M":4400,"12M":4400}},
-            {name: "GARMIN GPSMAP 8410 10\" MFD W/O Sonar", prices: {"4.1M":3500,"5.1M":3500,"5.5M":3500,"6.5M":3500,"7.2M":3500,"8.0M":3500,"8.5M":3500,"9.5M":3500,"12M":3500}},
-            {name: "GARMIN GMR 18HD+ 18NM Radar Scanner", prices: {"4.1M":2200,"5.1M":2200,"5.5M":2200,"6.5M":2200,"7.2M":2200,"8.0M":2200,"8.5M":2200,"9.5M":2200,"12M":2200}},
-            {name: "GARMIN GMR Fantom 18x Dome Radar", prices: {"4.1M":2600,"5.1M":2600,"5.5M":2600,"6.5M":2600,"7.2M":2600,"8.0M":2600,"8.5M":2600,"9.5M":2600,"12M":2600}}
-        ],
-        "Communication": [
-            {name: "Garmin 115i VHF Radio with Antenna", prices: {"4.1M":750,"5.1M":750,"5.5M":750,"6.5M":750,"7.2M":750,"8.0M":750,"8.5M":750,"9.5M":750,"12M":750}},
-            {name: "Garmin 215i AIS VHF Radio with Antenna", prices: {"4.1M":1200,"5.1M":1200,"5.5M":1200,"6.5M":1200,"7.2M":1200,"8.0M":1200,"8.5M":1200,"9.5M":1200,"12M":1200}},
-            {name: "Whelen Siren/PA System IAW COLREGS", prices: {"4.1M":1100,"5.1M":1100,"5.5M":1100,"6.5M":1100,"7.2M":1100,"8.0M":1100,"8.5M":1100,"9.5M":1100,"12M":1100}},
-            {name: "Signal Horn 12VDC IAW COLREGS", prices: {"4.1M":250,"5.1M":250,"5.5M":250,"6.5M":250,"7.2M":250,"8.0M":250,"8.5M":250,"9.5M":250,"12M":250}}
-        ],
-        "Lighting & Electrical": [
-            {name: "FLIR M232 Thermal Camera (320x240, 9Hz)", prices: {"4.1M":6500,"5.1M":6500,"5.5M":6500,"6.5M":6500,"7.2M":6500,"8.0M":6500,"8.5M":6500,"9.5M":6500,"12M":6500}},
-            {name: "FLIR M364C Gyro Stabilized Thermal IP Camera", prices: {"4.1M":27000,"5.1M":27000,"5.5M":27000,"6.5M":27000,"7.2M":27000,"8.0M":27000,"8.5M":27000,"9.5M":27000,"12M":27000}},
-            {name: "STL K-FORCE LED Law Enforcement Light Bar", prices: {"4.1M":1500,"5.1M":1500,"5.5M":1500,"6.5M":1500,"7.2M":1500,"8.0M":1500,"8.5M":1500,"9.5M":1500,"12M":1500}},
-            {name: "Remote Search Light ACR RCL 95 w/Joystick", prices: {"4.1M":1050,"5.1M":1050,"5.5M":1050,"6.5M":1050,"7.2M":1050,"8.0M":1050,"8.5M":1050,"9.5M":1050,"12M":1050}},
-            {name: "LED Flood Lights / Scene-Lights (4 pieces)", prices: {"4.1M":800,"5.1M":800,"5.5M":800,"6.5M":800,"7.2M":800,"8.0M":800,"8.5M":800,"9.5M":800,"12M":800}},
-            {name: "Deck Light LED Tri-Color Lighting", prices: {"4.1M":1060,"5.1M":1060,"5.5M":1400,"6.5M":1400,"7.2M":1775,"8.0M":1775,"8.5M":1775,"9.5M":1775,"12M":1775}},
-            {name: "12 VDC Air-Compressor Tube Inflation System", prices: {"4.1M":400,"5.1M":400,"5.5M":400,"6.5M":400,"7.2M":400,"8.0M":400,"8.5M":400,"9.5M":400,"12M":400}},
-            {name: "3-Bank Onboard Battery Charging System 40A", prices: {"4.1M":750,"5.1M":750,"5.5M":750,"6.5M":750,"7.2M":750,"8.0M":750,"8.5M":750,"9.5M":750,"12M":750}},
-            {name: "BLUE SEA Accessory Receptacle 12VDC", prices: {"4.1M":75,"5.1M":75,"5.5M":75,"6.5M":75,"7.2M":75,"8.0M":75,"8.5M":75,"9.5M":75,"12M":75}},
-            {name: "BLUE SEA 12VDC Dual USB Charging Outlets", prices: {"4.1M":100,"5.1M":100,"5.5M":100,"6.5M":100,"7.2M":100,"8.0M":100,"8.5M":100,"9.5M":100,"12M":100}},
-            {name: "Plastimo Flush Mount Offshore Compass 95", prices: {"4.1M":380,"5.1M":380,"5.5M":380,"6.5M":380,"7.2M":380,"8.0M":380,"8.5M":380,"9.5M":380,"12M":380}}
+            {name: "Dive Bottle Rack (6 Bottles)", prices: {"4.1M":3250,"5.1M":3250,"5.5M":3250,"6.5M":3250,"7.2M":3250,"8.0M":3250,"8.5M":3250,"9.5M":3250,"12M":3250}}
         ],
         "Protection & Guards": [
             {name: "Aluminium Bow Guard with Pushing Knee", prices: {"4.1M":8110,"5.1M":8110,"5.5M":8110,"6.5M":8110,"7.2M":8110,"8.0M":8110,"8.5M":8110,"9.5M":8110,"12M":8110}},
@@ -734,6 +823,43 @@ const ACCESSORIES = {
             {name: "HD Aluminium Engine Guard", prices: {"4.1M":3360,"5.1M":3360,"5.5M":3360,"6.5M":3360,"7.2M":3360,"8.0M":3360,"8.5M":3360,"9.5M":3360,"12M":3360}},
             {name: "Propeller Guard", prices: {"4.1M":1680,"5.1M":1680,"5.5M":1680,"6.5M":1680,"7.2M":1680,"8.0M":1680,"8.5M":1680,"9.5M":1680,"12M":1680}},
             {name: "Wooden Pallet with Shrink-Wrap Packaging", prices: {"4.1M":1430,"5.1M":1430,"5.5M":1430,"6.5M":1430,"7.2M":1430,"8.0M":1430,"8.5M":1430,"9.5M":1430,"12M":1430}}
+        ],
+        "Trailers": [
+            {name: "Galvanized Steel Single Axis Trailer (Without Brakes)", prices: {"4.1M":5000,"5.1M":5500,"5.5M":6000,"6.5M":"X","7.2M":"X","8.0M":"X","8.5M":"X","9.5M":"X","12M":"X"}},
+            {name: "Galvanized Steel Double Trailer (Without Brakes)", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":7000,"7.2M":7000,"8.0M":8000,"8.5M":8000,"9.5M":8000,"12M":"X"}},
+            {name: "Galvanized Steel Triple Trailer (Without Brakes)", prices: {"4.1M":"X","5.1M":"X","5.5M":"X","6.5M":"X","7.2M":"X","8.0M":"X","8.5M":"X","9.5M":"X","12M":10000}}
+        ],
+        "GPS": [
+            {name: "GARMIN GPSMAP 923 XSV 9\" MFD with Sonar", prices: {"4.1M":2270,"5.1M":2270,"5.5M":2270,"6.5M":2270,"7.2M":2270,"8.0M":2270,"8.5M":2270,"9.5M":2270,"12M":2270}},
+            {name: "GARMIN GPSMAP 8410 XSV 10\" MFD with Sonar", prices: {"4.1M":4400,"5.1M":4400,"5.5M":4400,"6.5M":4400,"7.2M":4400,"8.0M":4400,"8.5M":4400,"9.5M":4400,"12M":4400}},
+            {name: "GARMIN GPSMAP 8410 10\" MFD W/O Sonar", prices: {"4.1M":3500,"5.1M":3500,"5.5M":3500,"6.5M":3500,"7.2M":3500,"8.0M":3500,"8.5M":3500,"9.5M":3500,"12M":3500}}
+        ],
+        "Radar": [
+            {name: "GARMIN GMR 18HD+ 18NM Radar Scanner", prices: {"4.1M":2200,"5.1M":2200,"5.5M":2200,"6.5M":2200,"7.2M":2200,"8.0M":2200,"8.5M":2200,"9.5M":2200,"12M":2200}},
+            {name: "GARMIN GMR Fantom 18x Dome Radar", prices: {"4.1M":2600,"5.1M":2600,"5.5M":2600,"6.5M":2600,"7.2M":2600,"8.0M":2600,"8.5M":2600,"9.5M":2600,"12M":2600}}
+        ],
+        "VHF": [
+            {name: "Garmin 115i VHF Radio with Antenna", prices: {"4.1M":750,"5.1M":750,"5.5M":750,"6.5M":750,"7.2M":750,"8.0M":750,"8.5M":750,"9.5M":750,"12M":750}},
+            {name: "Garmin 215i AIS VHF Radio with Antenna", prices: {"4.1M":1200,"5.1M":1200,"5.5M":1200,"6.5M":1200,"7.2M":1200,"8.0M":1200,"8.5M":1200,"9.5M":1200,"12M":1200}}
+        ],
+        "Other Communication": [
+            {name: "Whelen Siren/PA System IAW COLREGS", prices: {"4.1M":1100,"5.1M":1100,"5.5M":1100,"6.5M":1100,"7.2M":1100,"8.0M":1100,"8.5M":1100,"9.5M":1100,"12M":1100}},
+            {name: "Signal Horn 12VDC IAW COLREGS", prices: {"4.1M":250,"5.1M":250,"5.5M":250,"6.5M":250,"7.2M":250,"8.0M":250,"8.5M":250,"9.5M":250,"12M":250}}
+        ],
+        "FLIR / Thermal": [
+            {name: "FLIR M232 Thermal Camera (320x240, 9Hz)", prices: {"4.1M":6500,"5.1M":6500,"5.5M":6500,"6.5M":6500,"7.2M":6500,"8.0M":6500,"8.5M":6500,"9.5M":6500,"12M":6500}},
+            {name: "FLIR M364C Gyro Stabilized Thermal IP Camera", prices: {"4.1M":27000,"5.1M":27000,"5.5M":27000,"6.5M":27000,"7.2M":27000,"8.0M":27000,"8.5M":27000,"9.5M":27000,"12M":27000}}
+        ],
+        "Lighting & Electrical": [
+            {name: "STL K-FORCE LED Law Enforcement Light Bar", prices: {"4.1M":1500,"5.1M":1500,"5.5M":1500,"6.5M":1500,"7.2M":1500,"8.0M":1500,"8.5M":1500,"9.5M":1500,"12M":1500}},
+            {name: "Remote Search Light ACR RCL 95 w/Joystick", prices: {"4.1M":1050,"5.1M":1050,"5.5M":1050,"6.5M":1050,"7.2M":1050,"8.0M":1050,"8.5M":1050,"9.5M":1050,"12M":1050}},
+            {name: "LED Flood Lights / Scene-Lights (4 pieces)", prices: {"4.1M":800,"5.1M":800,"5.5M":800,"6.5M":800,"7.2M":800,"8.0M":800,"8.5M":800,"9.5M":800,"12M":800}},
+            {name: "Deck Light LED Tri-Color Lighting", prices: {"4.1M":1060,"5.1M":1060,"5.5M":1400,"6.5M":1400,"7.2M":1775,"8.0M":1775,"8.5M":1775,"9.5M":1775,"12M":1775}},
+            {name: "12 VDC Air-Compressor Tube Inflation System", prices: {"4.1M":400,"5.1M":400,"5.5M":400,"6.5M":400,"7.2M":400,"8.0M":400,"8.5M":400,"9.5M":400,"12M":400}},
+            {name: "3-Bank Onboard Battery Charging System 40A", prices: {"4.1M":750,"5.1M":750,"5.5M":750,"6.5M":750,"7.2M":750,"8.0M":750,"8.5M":750,"9.5M":750,"12M":750}},
+            {name: "BLUE SEA Accessory Receptacle 12VDC", prices: {"4.1M":75,"5.1M":75,"5.5M":75,"6.5M":75,"7.2M":75,"8.0M":75,"8.5M":75,"9.5M":75,"12M":75}},
+            {name: "BLUE SEA 12VDC Dual USB Charging Outlets", prices: {"4.1M":100,"5.1M":100,"5.5M":100,"6.5M":100,"7.2M":100,"8.0M":100,"8.5M":100,"9.5M":100,"12M":100}},
+            {name: "Plastimo Flush Mount Offshore Compass 95", prices: {"4.1M":380,"5.1M":380,"5.5M":380,"6.5M":380,"7.2M":380,"8.0M":380,"8.5M":380,"9.5M":380,"12M":380}}
         ]
     },
     inflatable: {
@@ -760,18 +886,22 @@ const CATEGORY_GROUPS = {
         {
             name: "ASIS Accessories",
             icon: "🛠️",
-            categories: ["Customization", "Consoles, Cabins & T-Tops", "Frames & Structure", "Safety Equipment", "Protection & Guards"],
+            categories: ["General", "Console", "Cabin / T-Top", "A-Frame", "Other Frames & Structure", "Protection & Guards", "Trailers"],
             subgroups: [
                 {
                     name: "Seating",
-                    categories: ["Seating - Leaning Posts", "Seating - Jockey & Grab Rail", "Seating - Suspension"]
+                    categories: ["Leaning Posts", "Jockey & Grab Rail", "Suspension Seats"]
+                },
+                {
+                    name: "Safety Equipment",
+                    categories: ["Life Jackets", "Other Safety"]
                 }
             ]
         },
         {
             name: "Electronics & Communication",
             icon: "📡",
-            categories: ["Navigation", "Communication", "Lighting & Electrical"]
+            categories: ["GPS", "Radar", "VHF", "Other Communication", "FLIR / Thermal", "Lighting & Electrical"]
         }
     ],
     fiberglass: [
@@ -784,18 +914,22 @@ const CATEGORY_GROUPS = {
         {
             name: "ASIS Accessories",
             icon: "🛠️",
-            categories: ["Customization", "Consoles, Cabins & T-Tops", "Frames & Structure", "Safety Equipment", "Protection & Guards"],
+            categories: ["General", "Console", "Cabin / T-Top", "A-Frame", "Other Frames & Structure", "Protection & Guards", "Trailers"],
             subgroups: [
                 {
                     name: "Seating",
-                    categories: ["Seating - Leaning Posts", "Seating - Jockey & Straddle", "Seating - Bench Seats", "Seating - Suspension"]
+                    categories: ["Leaning Posts", "Jockey & Straddle", "Bench Seats", "Suspension Seats"]
+                },
+                {
+                    name: "Safety Equipment",
+                    categories: ["Life Jackets", "Other Safety"]
                 }
             ]
         },
         {
             name: "Electronics & Communication",
             icon: "📡",
-            categories: ["Navigation", "Communication", "Lighting & Electrical"]
+            categories: ["GPS", "Radar", "VHF", "Other Communication", "FLIR / Thermal", "Lighting & Electrical"]
         }
     ],
     inflatable: [
@@ -865,7 +999,8 @@ let state = {
     boatType: null,
     sizeIdx: null,
     currency: 'USD',
-    items: {}
+    items: {},
+    allExpanded: true
 };
 
 let itemCounter = 0;
@@ -968,35 +1103,64 @@ function selectBoatSize(idx) {
 }
 
 // ==================== CATEGORIES ====================
+// Check if a category is exclusive (radio buttons)
+function isExclusiveCategory(cat) {
+    return EXCLUSIVE_CATEGORIES.includes(cat);
+}
+
 // Helper function to build category HTML
 function buildCategoryHtml(cat, accessories, selectedSize, isFlat, group) {
     const items = accessories[cat];
     if (!items) return { html: '', hasItems: false };
     
-    // Filter items available for this size
-    const availableItems = items.filter(item => {
-        const price = item.prices[selectedSize];
-        return price !== 'X' && price !== undefined;
-    });
+    // Filter items available for this size, keeping track of original index
+    const availableItems = items.map((item, originalIdx) => ({...item, originalIdx}))
+        .filter(item => {
+            const price = item.prices[selectedSize];
+            return price !== 'X' && price !== undefined;
+        });
     
     if (availableItems.length === 0) return { html: '', hasItems: false };
     
     const catId = cat.replace(/[^a-zA-Z0-9]/g, '');
+    const isExclusive = isExclusiveCategory(cat);
     
-    // For flat groups, use the group name as header; for seating subcats, remove "Seating - " prefix
+    // For flat groups, use the group name as header
     let displayName = cat;
     if (isFlat && group) {
         displayName = group.name;
-    } else if (cat.startsWith('Seating - ')) {
-        displayName = cat.replace('Seating - ', '');
     }
     
-    const categoryClass = isFlat ? 'category flat-category' : 'category';
+    // Determine flat color class
+    let flatColorClass = '';
+    if (isFlat && group) {
+        if (group.name.toLowerCase().includes('engine') || group.name.toLowerCase().includes('propulsion')) {
+            flatColorClass = 'engine-flat';
+        } else if (group.name.toLowerCase().includes('accessories') || group.name.toLowerCase().includes('asis')) {
+            flatColorClass = 'accessories-flat';
+        } else if (group.name.toLowerCase().includes('electronic') || group.name.toLowerCase().includes('communication')) {
+            flatColorClass = 'electronics-flat';
+        }
+    }
+    
+    const categoryClass = isFlat ? `category flat-category ${flatColorClass}` : 'category';
+    
+    // Build content based on exclusive vs multi-select
+    let innerContent;
+    if (isExclusive) {
+        // Build radio button group
+        innerContent = buildRadioGroupContent(cat, catId, availableItems, selectedSize);
+    } else {
+        // Build checkbox group
+        innerContent = buildCheckboxGroupContent(cat, catId, availableItems, selectedSize);
+    }
+    
+    const exclusiveBadge = isExclusive ? '<span class="exclusive-badge" style="background:var(--gold);color:white;font-size:9px;padding:2px 6px;border-radius:4px;margin-left:8px;">SELECT ONE</span>' : '';
     
     const html = `
         <div class="${categoryClass}">
             <div class="cat-header" onclick="toggleCategory('${catId}')">
-                <h3>${isFlat && group ? `<span style="margin-right:10px;font-size:20px;">${group.icon}</span>` : ''}${displayName} <span style="opacity:0.7;font-weight:400;font-size:11px;">(${availableItems.length} items)</span></h3>
+                <h3>${isFlat && group ? `<span style="margin-right:10px;font-size:20px;">${group.icon}</span>` : ''}${displayName} ${exclusiveBadge}<span style="opacity:0.7;font-weight:400;font-size:11px;margin-left:8px;">(${availableItems.length} options)</span></h3>
                 <div style="display:flex;align-items:center;gap:12px;">
                     <span class="cat-total" id="catTotal-${catId}">$0</span>
                     <span class="arrow">▼</span>
@@ -1004,20 +1168,533 @@ function buildCategoryHtml(cat, accessories, selectedSize, isFlat, group) {
             </div>
             <div class="cat-content" id="content-${catId}">
                 <div class="cat-inner">
-                    <div class="item-grid-header">
-                        <span>Description</span>
-                        <span>Qty</span>
-                        <span>Unit Price</span>
-                        <span class="right">Extended</span>
-                        <span></span>
-                    </div>
-                    <div id="items-${catId}"></div>
-                    <button class="add-btn" onclick="addItem('${cat}')">+ Add Item</button>
+                    ${innerContent}
                 </div>
             </div>
         </div>`;
     
-    return { html, hasItems: true, cat };
+    return { html, hasItems: true, cat, isExclusive };
+}
+
+// Build radio button content for exclusive categories
+function buildRadioGroupContent(cat, catId, availableItems, selectedSize) {
+    let html = `<div class="radio-group" id="radio-${catId}">`;
+    
+    // Create nice "None" text based on category name
+    let noneText = "No " + cat;
+    if (cat === "Propulsion / Engine") noneText = "No Engine Selected";
+    else if (cat === "Cabin / T-Top") noneText = "No Cabin or T-Top";
+    else if (cat === "Leaning Posts") noneText = "No Leaning Post";
+    else if (cat === "A-Frame") noneText = "No A-Frame";
+    else if (cat === "Life Jackets") noneText = "No Life Jackets";
+    else if (cat === "Trailers") noneText = "No Trailer";
+    else if (cat === "GPS") noneText = "No GPS System";
+    else if (cat === "Radar") noneText = "No Radar";
+    else if (cat === "VHF") noneText = "No VHF Radio";
+    else if (cat === "FLIR / Thermal") noneText = "No Thermal Camera";
+    
+    // Add "None" option first (default selected)
+    html += `
+        <label class="radio-option none-option selected" onclick="selectRadioOption('${cat}', -1, this)">
+            <input type="radio" name="radio-${catId}" value="-1" checked>
+            <div class="option-details">
+                <div class="option-name">${noneText}</div>
+            </div>
+            <div class="option-price"></div>
+        </label>`;
+    
+    // Add actual items
+    availableItems.forEach((item) => {
+        const price = item.prices[selectedSize];
+        let priceDisplay;
+        let priceClass = 'option-price';
+        
+        if (price === 'TBD') {
+            // Show editable TBD input
+            priceDisplay = `<div class="tbd-input-wrapper">
+                <span>$</span>
+                <input type="number" class="tbd-price-input" id="tbd-radio-${catId}-${item.originalIdx}" 
+                    placeholder="TBD" min="0" step="100" 
+                    onclick="event.stopPropagation()" 
+                    onchange="updateTBDPrice('${cat}', ${item.originalIdx}, this.value, 'radio')">
+            </div>`;
+            priceClass = '';
+        } else if (price === 'Incl.') {
+            priceDisplay = 'Included';
+        } else {
+            priceDisplay = '$' + fmt(price);
+        }
+        
+        html += `
+            <label class="radio-option" onclick="selectRadioOption('${cat}', ${item.originalIdx}, this)">
+                <input type="radio" name="radio-${catId}" value="${item.originalIdx}">
+                <div class="option-details">
+                    <div class="option-name">${item.name}</div>
+                </div>
+                <div class="${priceClass}">${priceDisplay}</div>
+            </label>`;
+    });
+    
+    // Add custom item input row
+    html += `
+        <div class="custom-item-row">
+            <span class="custom-item-label">+ Add Custom:</span>
+            <input type="text" placeholder="Item name" id="custom-name-${catId}">
+            <input type="number" class="price-input" placeholder="Price" min="0" step="100" id="custom-price-${catId}">
+            <button class="add-btn" onclick="addCustomItem('${cat}', '${catId}', 'radio')">Add</button>
+        </div>`;
+    
+    html += '</div>';
+    return html;
+}
+
+// Build checkbox content for non-exclusive categories
+function buildCheckboxGroupContent(cat, catId, availableItems, selectedSize) {
+    let html = `<div class="checkbox-group" id="checkbox-${catId}">`;
+    
+    // Add all items as checkboxes
+    availableItems.forEach((item) => {
+        const price = item.prices[selectedSize];
+        const idx = item.originalIdx;
+        let priceDisplay;
+        let priceClass = 'option-price';
+        
+        if (price === 'TBD') {
+            // Show editable TBD input
+            priceDisplay = `<div class="tbd-input-wrapper">
+                <span>$</span>
+                <input type="number" class="tbd-price-input" id="tbd-chk-${catId}-${idx}" 
+                    placeholder="TBD" min="0" step="100" 
+                    onclick="event.stopPropagation()" 
+                    onchange="updateTBDPrice('${cat}', ${idx}, this.value, 'checkbox')">
+            </div>`;
+            priceClass = '';
+        } else if (price === 'Incl.') {
+            priceDisplay = 'Included';
+        } else {
+            priceDisplay = '$' + fmt(price);
+        }
+        
+        html += `
+            <label class="checkbox-option" id="chk-${catId}-${idx}">
+                <input type="checkbox" name="checkbox-${catId}" value="${idx}" onchange="toggleCheckboxOption('${cat}', ${idx}, this)">
+                <div class="option-details">
+                    <div class="option-name">${item.name}</div>
+                </div>
+                <div class="qty-control">
+                    <input type="number" value="0" min="0" max="99" id="qty-${catId}-${idx}" onchange="updateCheckboxQty('${cat}', ${idx})" onclick="event.stopPropagation()">
+                </div>
+                <div class="${priceClass}" id="price-${catId}-${idx}">${priceDisplay}</div>
+                <div class="option-extended" id="ext-${catId}-${idx}">$0</div>
+            </label>`;
+    });
+    
+    // Add custom item input row
+    html += `
+        <div class="custom-item-row">
+            <span class="custom-item-label">+ Add Custom:</span>
+            <input type="text" placeholder="Item name" id="custom-name-${catId}">
+            <input type="number" style="width:50px;" placeholder="Qty" min="1" value="1" id="custom-qty-${catId}">
+            <input type="number" class="price-input" placeholder="Price" min="0" step="100" id="custom-price-${catId}">
+            <button class="add-btn" onclick="addCustomItem('${cat}', '${catId}', 'checkbox')">Add</button>
+        </div>`;
+    
+    html += '</div>';
+    return html;
+}
+
+// Handle radio button selection
+function selectRadioOption(category, itemIdx, element) {
+    const catId = category.replace(/[^a-zA-Z0-9]/g, '');
+    const radioGroup = document.getElementById('radio-' + catId);
+    
+    // Remove selected class from all options
+    radioGroup.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+    
+    // Add selected class to clicked option
+    element.classList.add('selected');
+    
+    // Check the radio input
+    element.querySelector('input[type="radio"]').checked = true;
+    
+    // Update state
+    if (!state.items[category]) state.items[category] = {};
+    
+    // Clear previous selections in this category
+    state.items[category] = {};
+    
+    if (itemIdx === -1) {
+        // "None" selected - no item
+        state.items[category]['radio'] = {itemIdx: -1, qty: 0, price: 0, name: 'None', isCustom: false, isTBD: false};
+    } else {
+        const selectedSize = getSelectedSize();
+        const item = ACCESSORIES[state.boatType][category][itemIdx];
+        const price = item.prices[selectedSize];
+        
+        // Handle various price types: number, 'TBD', 'Incl.', undefined
+        let numericPrice = 0;
+        let isTBD = false;
+        if (typeof price === 'number' && !isNaN(price)) {
+            numericPrice = price;
+        } else if (price === 'TBD') {
+            isTBD = true;
+            // Check if there's a TBD input with a value
+            const tbdInput = document.getElementById(`tbd-radio-${catId}-${itemIdx}`);
+            if (tbdInput && tbdInput.value) {
+                numericPrice = parseFloat(tbdInput.value) || 0;
+                isTBD = (numericPrice === 0);
+            }
+        }
+        // 'Incl.' and undefined both result in price = 0
+        
+        state.items[category]['radio'] = {
+            itemIdx: itemIdx,
+            qty: 1,
+            price: numericPrice,
+            name: item.name,
+            isCustom: false,
+            isTBD: isTBD
+        };
+    }
+    
+    updateCategoryTotal(category);
+    updateTotals();
+}
+
+// Handle checkbox toggle
+function toggleCheckboxOption(category, itemIdx, checkbox) {
+    const catId = category.replace(/[^a-zA-Z0-9]/g, '');
+    const label = document.getElementById(`chk-${catId}-${itemIdx}`);
+    const qtyInput = document.getElementById(`qty-${catId}-${itemIdx}`);
+    const extDiv = document.getElementById(`ext-${catId}-${itemIdx}`);
+    
+    if (!state.items[category]) state.items[category] = {};
+    
+    if (checkbox.checked) {
+        label.classList.add('selected');
+        // Set qty to 1 when checked
+        qtyInput.value = 1;
+        
+        const selectedSize = getSelectedSize();
+        const item = ACCESSORIES[state.boatType][category][itemIdx];
+        const price = item.prices[selectedSize];
+        
+        // Handle various price types
+        let numericPrice = 0;
+        let isTBD = false;
+        if (typeof price === 'number' && !isNaN(price)) {
+            numericPrice = price;
+        } else if (price === 'TBD') {
+            isTBD = true;
+            // Check if there's a TBD input with a value
+            const tbdInput = document.getElementById(`tbd-chk-${catId}-${itemIdx}`);
+            if (tbdInput && tbdInput.value) {
+                numericPrice = parseFloat(tbdInput.value) || 0;
+                isTBD = (numericPrice === 0);
+            }
+        }
+        
+        state.items[category][itemIdx] = {
+            itemIdx: itemIdx,
+            qty: 1,
+            price: numericPrice,
+            name: item.name,
+            isCustom: false,
+            isTBD: isTBD
+        };
+        
+        // Update extended price
+        if (isTBD) {
+            extDiv.innerHTML = '<span class="tbd">TBD</span>';
+        } else if (price === 'Incl.') {
+            extDiv.textContent = 'Incl.';
+        } else {
+            extDiv.textContent = '$' + fmt(numericPrice);
+        }
+    } else {
+        label.classList.remove('selected');
+        qtyInput.value = 0;
+        delete state.items[category][itemIdx];
+        extDiv.textContent = '$0';
+    }
+    
+    updateCategoryTotal(category);
+    updateTotals();
+}
+
+// Update checkbox quantity
+function updateCheckboxQty(category, itemIdx) {
+    const catId = category.replace(/[^a-zA-Z0-9]/g, '');
+    const qtyInput = document.getElementById(`qty-${catId}-${itemIdx}`);
+    const checkbox = document.querySelector(`#chk-${catId}-${itemIdx} input[type="checkbox"]`);
+    const label = document.getElementById(`chk-${catId}-${itemIdx}`);
+    const extDiv = document.getElementById(`ext-${catId}-${itemIdx}`);
+    
+    const qty = parseInt(qtyInput.value) || 0;
+    
+    if (!state.items[category]) state.items[category] = {};
+    
+    if (qty > 0) {
+        // Auto-check if qty > 0
+        checkbox.checked = true;
+        label.classList.add('selected');
+        
+        const selectedSize = getSelectedSize();
+        const item = ACCESSORIES[state.boatType][category][itemIdx];
+        const price = item.prices[selectedSize];
+        
+        // Handle various price types
+        let numericPrice = 0;
+        let isTBD = false;
+        if (typeof price === 'number' && !isNaN(price)) {
+            numericPrice = price;
+        } else if (price === 'TBD') {
+            isTBD = true;
+            // Check if there's a TBD input with a value
+            const tbdInput = document.getElementById(`tbd-chk-${catId}-${itemIdx}`);
+            if (tbdInput && tbdInput.value) {
+                numericPrice = parseFloat(tbdInput.value) || 0;
+                isTBD = (numericPrice === 0);
+            }
+        }
+        
+        state.items[category][itemIdx] = {
+            itemIdx: itemIdx,
+            qty: qty,
+            price: numericPrice,
+            name: item.name,
+            isCustom: false,
+            isTBD: isTBD
+        };
+        
+        // Update extended price
+        if (isTBD) {
+            extDiv.innerHTML = '<span class="tbd">TBD</span>';
+        } else if (price === 'Incl.') {
+            extDiv.textContent = 'Incl.';
+        } else {
+            extDiv.textContent = '$' + fmt(numericPrice * qty);
+        }
+    } else {
+        // Auto-uncheck if qty = 0
+        checkbox.checked = false;
+        label.classList.remove('selected');
+        delete state.items[category][itemIdx];
+        extDiv.textContent = '$0';
+    }
+    
+    updateCategoryTotal(category);
+    updateTotals();
+}
+
+// Update TBD price when user enters a value
+function updateTBDPrice(category, itemIdx, value, type) {
+    const price = parseFloat(value) || 0;
+    const catId = category.replace(/[^a-zA-Z0-9]/g, '');
+    
+    if (!state.items[category]) state.items[category] = {};
+    
+    if (type === 'radio') {
+        // For radio buttons, update the 'radio' entry
+        if (state.items[category]['radio'] && state.items[category]['radio'].itemIdx === itemIdx) {
+            state.items[category]['radio'].price = price;
+            state.items[category]['radio'].isTBD = (price === 0);
+        }
+    } else {
+        // For checkboxes, update the specific item entry
+        if (state.items[category][itemIdx]) {
+            state.items[category][itemIdx].price = price;
+            state.items[category][itemIdx].isTBD = (price === 0);
+            
+            // Update extended price display
+            const extDiv = document.getElementById(`ext-${catId}-${itemIdx}`);
+            const qty = state.items[category][itemIdx].qty || 1;
+            if (price > 0) {
+                extDiv.textContent = '$' + fmt(price * qty);
+            } else {
+                extDiv.innerHTML = '<span class="tbd">TBD</span>';
+            }
+        }
+    }
+    
+    updateCategoryTotal(category);
+    updateTotals();
+}
+
+// Add custom item to a category
+function addCustomItem(category, catId, type) {
+    const nameInput = document.getElementById(`custom-name-${catId}`);
+    const priceInput = document.getElementById(`custom-price-${catId}`);
+    const qtyInput = document.getElementById(`custom-qty-${catId}`);
+    
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value) || 0;
+    const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+    
+    if (!name) {
+        alert('Please enter an item name');
+        nameInput.focus();
+        return;
+    }
+    
+    if (!state.items[category]) state.items[category] = {};
+    
+    // Generate unique custom item ID
+    itemCounter++;
+    const customId = `custom_${itemCounter}`;
+    
+    if (type === 'radio') {
+        // For radio (exclusive) categories, replace current selection
+        state.items[category] = {};
+        state.items[category]['radio'] = {
+            itemIdx: customId,
+            qty: 1,
+            price: price,
+            name: name,
+            isCustom: true,
+            isTBD: false
+        };
+        
+        // Add visual indicator - create a custom selected option
+        const radioGroup = document.getElementById(`radio-${catId}`);
+        
+        // Remove selected class from all options
+        radioGroup.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+        
+        // Add custom item display at the top (after None)
+        const existingCustom = radioGroup.querySelector('.custom-added-item');
+        if (existingCustom) existingCustom.remove();
+        
+        const customLabel = document.createElement('label');
+        customLabel.className = 'radio-option selected custom-added-item';
+        customLabel.innerHTML = `
+            <input type="radio" name="radio-${catId}" value="${customId}" checked>
+            <div class="option-details">
+                <div class="option-name">✨ ${name}</div>
+            </div>
+            <div class="option-price" style="color:var(--success);">$${fmt(price)}</div>
+        `;
+        customLabel.onclick = function() {
+            radioGroup.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+            customLabel.classList.add('selected');
+            state.items[category]['radio'] = {
+                itemIdx: customId,
+                qty: 1,
+                price: price,
+                name: name,
+                isCustom: true,
+                isTBD: false
+            };
+            updateCategoryTotal(category);
+            updateTotals();
+        };
+        
+        // Insert after "None" option
+        const noneOption = radioGroup.querySelector('.none-option');
+        if (noneOption) {
+            noneOption.after(customLabel);
+        } else {
+            radioGroup.insertBefore(customLabel, radioGroup.firstChild);
+        }
+        
+    } else {
+        // For checkbox (multi-select) categories, add to the list
+        state.items[category][customId] = {
+            itemIdx: customId,
+            qty: qty,
+            price: price,
+            name: name,
+            isCustom: true,
+            isTBD: false
+        };
+        
+        // Add visual indicator
+        const checkboxGroup = document.getElementById(`checkbox-${catId}`);
+        
+        const customLabel = document.createElement('label');
+        customLabel.className = 'checkbox-option selected custom-added-item';
+        customLabel.id = `chk-${catId}-${customId}`;
+        customLabel.innerHTML = `
+            <input type="checkbox" checked>
+            <div class="option-details">
+                <div class="option-name">✨ ${name}</div>
+            </div>
+            <div class="qty-control">
+                <input type="number" value="${qty}" min="0" max="99" onchange="updateCustomQty('${category}', '${customId}', this.value)" onclick="event.stopPropagation()">
+            </div>
+            <div class="option-price" style="color:var(--success);">$${fmt(price)}</div>
+            <div class="option-extended" style="color:var(--success);">$${fmt(price * qty)}</div>
+        `;
+        
+        // Insert before the custom-item-row
+        const customRow = checkboxGroup.querySelector('.custom-item-row');
+        if (customRow) {
+            checkboxGroup.insertBefore(customLabel, customRow);
+        } else {
+            checkboxGroup.appendChild(customLabel);
+        }
+        
+        // Add click handler to toggle
+        customLabel.querySelector('input[type="checkbox"]').onchange = function() {
+            if (this.checked) {
+                customLabel.classList.add('selected');
+                state.items[category][customId] = {
+                    itemIdx: customId,
+                    qty: parseInt(customLabel.querySelector('input[type="number"]').value) || 1,
+                    price: price,
+                    name: name,
+                    isCustom: true,
+                    isTBD: false
+                };
+            } else {
+                customLabel.classList.remove('selected');
+                delete state.items[category][customId];
+            }
+            updateCategoryTotal(category);
+            updateTotals();
+        };
+    }
+    
+    // Clear inputs
+    nameInput.value = '';
+    priceInput.value = '';
+    if (qtyInput) qtyInput.value = '1';
+    
+    updateCategoryTotal(category);
+    updateTotals();
+}
+
+// Update custom item quantity
+function updateCustomQty(category, customId, value) {
+    const qty = parseInt(value) || 0;
+    
+    if (qty > 0 && state.items[category] && state.items[category][customId]) {
+        state.items[category][customId].qty = qty;
+        
+        // Update extended display
+        const catId = category.replace(/[^a-zA-Z0-9]/g, '');
+        const label = document.getElementById(`chk-${catId}-${customId}`);
+        if (label) {
+            const price = state.items[category][customId].price;
+            const extDiv = label.querySelector('.option-extended');
+            if (extDiv) {
+                extDiv.textContent = '$' + fmt(price * qty);
+            }
+        }
+    } else if (qty === 0 && state.items[category]) {
+        delete state.items[category][customId];
+        // Uncheck the checkbox
+        const catId = category.replace(/[^a-zA-Z0-9]/g, '');
+        const label = document.getElementById(`chk-${catId}-${customId}`);
+        if (label) {
+            label.classList.remove('selected');
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = false;
+        }
+    }
+    
+    updateCategoryTotal(category);
+    updateTotals();
 }
 
 function buildCategories() {
@@ -1033,8 +1710,8 @@ function buildCategories() {
     document.getElementById('selectedBoatLabel').textContent = 
         `${BOATS[state.boatType].name} - ${selectedSize}`;
     
-    // Track categories to auto-add first item
-    const categoriesToInit = [];
+    // Track exclusive categories to initialize with "None"
+    const exclusiveCategories = [];
     
     // Build each main group
     groups.forEach((group, groupIdx) => {
@@ -1047,7 +1724,9 @@ function buildCategories() {
                 const result = buildCategoryHtml(cat, accessories, selectedSize, group.flat, group);
                 if (result.hasItems) {
                     groupHasItems = true;
-                    categoriesToInit.push(result.cat);
+                    if (result.isExclusive) {
+                        exclusiveCategories.push(result.cat);
+                    }
                     if (group.flat) {
                         container.innerHTML += result.html;
                     } else {
@@ -1068,7 +1747,9 @@ function buildCategories() {
                     if (result.hasItems) {
                         subgroupHasItems = true;
                         groupHasItems = true;
-                        categoriesToInit.push(result.cat);
+                        if (result.isExclusive) {
+                            exclusiveCategories.push(result.cat);
+                        }
                         subgroupHtml += result.html;
                     }
                 });
@@ -1096,11 +1777,21 @@ function buildCategories() {
         
         if (!groupHasItems) return;
         
+        // Determine color class based on group name
+        let colorClass = '';
+        if (group.name.toLowerCase().includes('engine') || group.name.toLowerCase().includes('propulsion')) {
+            colorClass = 'main-group-engine';
+        } else if (group.name.toLowerCase().includes('accessories') || group.name.toLowerCase().includes('asis')) {
+            colorClass = 'main-group-accessories';
+        } else if (group.name.toLowerCase().includes('electronic') || group.name.toLowerCase().includes('communication')) {
+            colorClass = 'main-group-electronics';
+        }
+        
         // For non-flat groups, wrap in main group container
         if (!group.flat && groupHtml) {
             const groupId = 'group-' + groupIdx;
             container.innerHTML += `
-                <div class="main-group">
+                <div class="main-group ${colorClass}">
                     <div class="main-group-header" onclick="toggleMainGroup('${groupId}')">
                         <h2><span class="group-icon">${group.icon}</span> ${group.name}</h2>
                         <div style="display:flex;align-items:center;">
@@ -1117,9 +1808,12 @@ function buildCategories() {
         }
     });
     
-    // Auto-add first item row to each category
-    categoriesToInit.forEach(cat => {
-        addItem(cat);
+    // Initialize exclusive categories with "None" selected (qty=0)
+    exclusiveCategories.forEach(cat => {
+        if (!state.items[cat]) state.items[cat] = {};
+        state.items[cat]['radio'] = {itemIdx: -1, qty: 0, price: 0, name: 'None', isCustom: false, isTBD: false};
+        // Update total to hide $0 for "None" selection
+        updateCategoryTotal(cat);
     });
 }
 
@@ -1174,7 +1868,7 @@ function addItem(category) {
     row.id = 'row-' + id;
     row.innerHTML = `
         <select onchange="itemSelected(this, '${category}', ${id})">${options}</select>
-        <input type="number" value="1" min="1" id="qty-${id}" onchange="updateItemQty(${id}, '${category}')">
+        <input type="number" value="0" min="0" id="qty-${id}" onchange="updateItemQty(${id}, '${category}')">
         <input type="text" class="price-input" id="price-${id}" value="$0" onchange="updateItemPrice(${id}, '${category}')">
         <div class="extended" id="ext-${id}">$0</div>
         <button class="delete-btn" onclick="removeItem(${id}, '${category}')">×</button>
@@ -1182,7 +1876,7 @@ function addItem(category) {
     itemsDiv.appendChild(row);
     
     if (!state.items[category]) state.items[category] = {};
-    state.items[category][id] = {itemIdx: null, qty: 1, price: 0, name: '', isCustom: false, isTBD: false};
+    state.items[category][id] = {itemIdx: null, qty: 0, price: 0, name: '', isCustom: false, isTBD: false};
 }
 
 function itemSelected(select, category, id) {
@@ -1288,39 +1982,51 @@ function removeItem(id, category) {
 function updateCategoryTotal(category) {
     const catId = category.replace(/[^a-zA-Z0-9]/g, '');
     let total = 0;
+    
     if (state.items[category]) {
         Object.values(state.items[category]).forEach(item => {
-            if (item.price && item.qty && !item.isTBD) {
-                total += item.price * item.qty;
+            // Check if this is a real selection (not "None" which has itemIdx -1)
+            if (item.itemIdx !== -1 && item.qty > 0) {
+                if (item.price && !item.isTBD) {
+                    total += item.price * item.qty;
+                }
             }
         });
     }
+    
     const el = document.getElementById('catTotal-' + catId);
-    if (el) el.textContent = '$' + fmt(total);
+    if (el) {
+        el.textContent = '$' + fmt(total);
+        el.style.display = 'inline-block';
+    }
 }
 
 // ==================== TOTALS ====================
 function updateTotals() {
-    const base = state.boatType && state.sizeIdx !== null ? BOATS[state.boatType].sizes[state.sizeIdx].price : 0;
-    let options = 0;
+    const boatQty = parseInt(document.getElementById('boatQty')?.value) || 1;
+    const basePerBoat = state.boatType && state.sizeIdx !== null ? BOATS[state.boatType].sizes[state.sizeIdx].price : 0;
+    const base = basePerBoat * boatQty;
+    let optionsPerBoat = 0;
     
     Object.values(state.items).forEach(cat => {
         Object.values(cat).forEach(item => {
             if (item.price && item.qty && !item.isTBD) {
-                options += item.price * item.qty;
+                optionsPerBoat += item.price * item.qty;
             }
         });
     });
     
+    const options = optionsPerBoat * boatQty;
     const subtotal = base + options;
     const discountPct = parseFloat(document.getElementById('discount')?.value) || 0;
     const discount = subtotal * (discountPct / 100);
     const total = subtotal - discount;
     
     // Update summaries
+    const qtyLabel = boatQty > 1 ? ` (×${boatQty})` : '';
     document.getElementById('sumType').textContent = state.boatType ? BOATS[state.boatType].name : '-';
     document.getElementById('sumSize').textContent = state.sizeIdx !== null ? BOATS[state.boatType].sizes[state.sizeIdx].size : '-';
-    document.getElementById('sumBase').textContent = base ? fmtPrice(base) : '-';
+    document.getElementById('sumBase').textContent = basePerBoat ? fmtPrice(base) + qtyLabel : '-';
     document.getElementById('sumOptions').textContent = fmtPrice(options);
     document.getElementById('sumTotal').textContent = fmtPrice(total);
     
@@ -1341,17 +2047,22 @@ function updateTotals() {
 function updateSelectedItemsList() {
     const list = document.getElementById('selectedItemsList');
     if (!list) return;
+    const boatQty = parseInt(document.getElementById('boatQty')?.value) || 1;
     
     let html = '';
     if (state.boatType && state.sizeIdx !== null) {
-        html += `<div class="sel-item"><span class="name">${BOATS[state.boatType].sizes[state.sizeIdx].size} ${BOATS[state.boatType].name}</span><span class="amt">${fmtPrice(BOATS[state.boatType].sizes[state.sizeIdx].price)}</span></div>`;
+        const boatPrice = BOATS[state.boatType].sizes[state.sizeIdx].price * boatQty;
+        const qtyLabel = boatQty > 1 ? `${boatQty}× ` : '';
+        html += `<div class="sel-item"><span class="name">${qtyLabel}${BOATS[state.boatType].sizes[state.sizeIdx].size} ${BOATS[state.boatType].name}</span><span class="amt">${fmtPrice(boatPrice)}</span></div>`;
     }
     
     Object.entries(state.items).forEach(([cat, items]) => {
         Object.values(items).forEach(item => {
-            if (item.name) {
-                const amt = item.isTBD ? 'TBD' : fmtPrice(item.price * item.qty);
-                html += `<div class="sel-item"><span class="name">${item.qty}x ${item.name}</span><span class="amt">${amt}</span></div>`;
+            // Skip "None" selections (itemIdx === -1)
+            if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                const totalQty = item.qty * boatQty;
+                const amt = item.isTBD ? 'TBD' : fmtPrice(item.price * item.qty * boatQty);
+                html += `<div class="sel-item"><span class="name">${totalQty}× ${item.name}</span><span class="amt">${amt}</span></div>`;
             }
         });
     });
@@ -1383,6 +2094,8 @@ function goTo(page) {
     
     if (page === 2) {
         buildCategories();
+        // Auto-open all categories
+        openAllCategories();
     }
     if (page === 3) {
         // Set default quotation title based on boat type and size
@@ -1406,9 +2119,69 @@ function goTo(page) {
     window.scrollTo(0, 0);
 }
 
+// Open all categories, main groups, and subgroups
+function openAllCategories() {
+    // Open all main groups
+    document.querySelectorAll('.main-group-content').forEach(content => {
+        content.classList.add('open');
+        content.previousElementSibling.classList.add('open');
+    });
+    
+    // Open all subgroups
+    document.querySelectorAll('.subgroup-content').forEach(content => {
+        content.classList.add('open');
+        content.previousElementSibling.classList.add('open');
+    });
+    
+    // Open all categories
+    document.querySelectorAll('.cat-content').forEach(content => {
+        content.classList.add('open');
+        content.previousElementSibling.classList.add('open');
+    });
+    
+    // Update button text
+    const btn = document.getElementById('toggleAllBtn');
+    if (btn) btn.innerHTML = '▲ Collapse All';
+    state.allExpanded = true;
+}
+
+function closeAllCategories() {
+    // Close all main groups
+    document.querySelectorAll('.main-group-content').forEach(content => {
+        content.classList.remove('open');
+        content.previousElementSibling.classList.remove('open');
+    });
+    
+    // Close all subgroups
+    document.querySelectorAll('.subgroup-content').forEach(content => {
+        content.classList.remove('open');
+        content.previousElementSibling.classList.remove('open');
+    });
+    
+    // Close all categories
+    document.querySelectorAll('.cat-content').forEach(content => {
+        content.classList.remove('open');
+        content.previousElementSibling.classList.remove('open');
+    });
+    
+    // Update button text
+    const btn = document.getElementById('toggleAllBtn');
+    if (btn) btn.innerHTML = '▼ Expand All';
+    state.allExpanded = false;
+}
+
+function toggleAllCategories() {
+    if (state.allExpanded) {
+        closeAllCategories();
+    } else {
+        openAllCategories();
+    }
+}
+
 // ==================== PREVIEW ====================
 function buildPreview() {
     const boat = BOATS[state.boatType].sizes[state.sizeIdx];
+    const boatQty = parseInt(document.getElementById('boatQty')?.value) || 1;
     const salesmanKey = document.getElementById('salesman').value;
     const salesmanInfo = salesmanKey ? SALESMEN[salesmanKey] : null;
     const tender = document.getElementById('tenderNum').value;
@@ -1447,17 +2220,19 @@ function buildPreview() {
         ${document.getElementById('custAddr').value || ''}
     `;
     
-    // Calculate totals first
-    let options = 0;
+    // Calculate totals first (per boat then multiply)
+    let optionsPerBoat = 0;
     Object.values(state.items).forEach(cat => {
         Object.values(cat).forEach(item => {
             if (item.price && item.qty && !item.isTBD) {
-                options += item.price * item.qty;
+                optionsPerBoat += item.price * item.qty;
             }
         });
     });
     
-    const subtotal = boat.price + options;
+    const boatTotal = boat.price * boatQty;
+    const optionsTotal = optionsPerBoat * boatQty;
+    const subtotal = boatTotal + optionsTotal;
     const discountPct = parseFloat(document.getElementById('discount').value) || 0;
     const discount = subtotal * (discountPct / 100);
     const total = subtotal - discount;
@@ -1466,25 +2241,29 @@ function buildPreview() {
     let itemsHtml = '';
     if (hideSubPrices) {
         // Show items but hide individual prices - only show total at the end
-        itemsHtml = `<tr><td><strong>${BOATS[state.boatType].name} - ${boat.size}</strong></td><td>1</td><td class="right">-</td><td class="right">-</td></tr>`;
+        itemsHtml = `<tr><td><strong>${BOATS[state.boatType].name} - ${boat.size}</strong></td><td>${boatQty}</td><td class="right">-</td><td class="right">-</td></tr>`;
         
         Object.entries(state.items).forEach(([cat, items]) => {
             Object.values(items).forEach(item => {
-                if (item.name) {
-                    itemsHtml += `<tr><td>${item.name}</td><td>${item.qty}</td><td class="right">-</td><td class="right">-</td></tr>`;
+                // Skip "None" selections (itemIdx === -1)
+                if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                    const totalQty = item.qty * boatQty;
+                    itemsHtml += `<tr><td>${item.name}</td><td>${totalQty}</td><td class="right">-</td><td class="right">-</td></tr>`;
                 }
             });
         });
     } else {
         // Show full details with prices
-        itemsHtml = `<tr><td><strong>${BOATS[state.boatType].name} - ${boat.size}</strong></td><td>1</td><td class="right">${fmtPrice(boat.price)}</td><td class="right">${fmtPrice(boat.price)}</td></tr>`;
+        itemsHtml = `<tr><td><strong>${BOATS[state.boatType].name} - ${boat.size}</strong></td><td>${boatQty}</td><td class="right">${fmtPrice(boat.price)}</td><td class="right">${fmtPrice(boatTotal)}</td></tr>`;
         
         Object.entries(state.items).forEach(([cat, items]) => {
             Object.values(items).forEach(item => {
-                if (item.name) {
+                // Skip "None" selections (itemIdx === -1)
+                if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                    const totalQty = item.qty * boatQty;
                     const unitPrice = item.isTBD ? 'TBD' : fmtPrice(item.price);
-                    const itemTotal = item.isTBD ? 'TBD' : fmtPrice(item.price * item.qty);
-                    itemsHtml += `<tr><td>${item.name}</td><td>${item.qty}</td><td class="right">${unitPrice}</td><td class="right">${itemTotal}</td></tr>`;
+                    const itemTotal = item.isTBD ? 'TBD' : fmtPrice(item.price * totalQty);
+                    itemsHtml += `<tr><td>${item.name}</td><td>${totalQty}</td><td class="right">${unitPrice}</td><td class="right">${itemTotal}</td></tr>`;
                 }
             });
         });
@@ -1516,191 +2295,863 @@ function buildPreview() {
     }
 }
 
-// ==================== EXPORT ====================
-function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+// ==================== PDF CONFIGURATION ====================
+// Base URL for static assets - change this to your Vercel deployment URL
+const PDF_CONFIG = {
+    // Set this to your Vercel URL when deployed, e.g., 'https://your-app.vercel.app'
+    // For local testing, use relative paths or a local server
+    baseUrl: '', // Leave empty for relative paths
     
+    // Static PDF paths (relative to baseUrl)
+    staticPdfs: {
+        companyPresentation: '/assets/pdf/company_presentation.pdf',
+        termsConditions: '/assets/pdf/terms_conditions.pdf'
+    },
+    
+    // Technical specs folder
+    specsFolder: '/specs/',
+    
+    // Image assets
+    images: {
+        asusLogo: '/assets/images/asis_logo.png',
+        shield: '/assets/images/shield.png',
+        arrow: '/assets/images/arrow.png',
+        stamp: '/assets/images/stamp.png',
+        diamondLogo: '/assets/images/diamond_logo.png'
+    }
+};
+
+// Helper function to get spec PDF filename based on boat type and size
+function getSpecPdfFilename() {
     const boat = BOATS[state.boatType].sizes[state.sizeIdx];
+    const sizeStr = boat.size.replace('.', '_').replace('M', '').toLowerCase();
+    
+    if (state.boatType === 'aluminum') {
+        return `alu_${sizeStr}.pdf`;
+    } else if (state.boatType === 'fiberglass') {
+        return `grp_${sizeStr}.pdf`;
+    } else {
+        // Inflatable - specs not yet available
+        return null;
+    }
+}
+
+// ==================== EXPORT ====================
+async function downloadPDF() {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    
+    // Show loading indicator
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Generating PDF...';
+    btn.disabled = true;
+    
+    try {
+        // Gather all form data
+        const formData = gatherFormData();
+        
+        // Create the main PDF document
+        const pdfDoc = await PDFDocument.create();
+        
+        // Embed fonts
+        const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+        const timesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+        
+        const fonts = { helvetica, helveticaBold, timesRoman, timesItalic };
+        
+        // Page 1: Cover Page
+        await generateCoverPage(pdfDoc, fonts, formData);
+        
+        // Page 2: Company Presentation (static PDF)
+        await embedStaticPdf(pdfDoc, PDF_CONFIG.staticPdfs.companyPresentation, 'Company Presentation');
+        
+        // Page 3: Quotation Details
+        await generateQuotationPage(pdfDoc, fonts, formData);
+        
+        // Page 4: Annex (accessories list) - may be multiple pages
+        await generateAnnexPages(pdfDoc, fonts, formData);
+        
+        // Page 5: Technical Specifications (boat-specific PDF)
+        const specFilename = getSpecPdfFilename();
+        if (specFilename) {
+            await embedStaticPdf(pdfDoc, PDF_CONFIG.specsFolder + specFilename, 'Technical Specifications');
+        }
+        
+        // Page 6: Terms & Conditions (static PDF)
+        await embedStaticPdf(pdfDoc, PDF_CONFIG.staticPdfs.termsConditions, 'Terms & Conditions');
+        
+        // Save and download
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${formData.quoteNum}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+    } catch (error) {
+        console.error('PDF Generation Error:', error);
+        alert('Error generating PDF. Some static PDFs may not be available. Check console for details.\n\nGenerating simplified PDF...');
+        
+        // Fallback: generate simplified PDF without static pages
+        await generateSimplifiedPDF();
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+}
+
+// Gather all form data into a single object
+function gatherFormData() {
+    const boat = BOATS[state.boatType].sizes[state.sizeIdx];
+    const boatQty = parseInt(document.getElementById('boatQty')?.value) || 1;
     const salesmanKey = document.getElementById('salesman').value;
     const salesmanInfo = salesmanKey ? SALESMEN[salesmanKey] : null;
-    const tender = document.getElementById('tenderNum').value;
     const hideSubPrices = document.getElementById('hideSubPrices').checked;
     
-    // Calculate totals first
-    let options = 0;
-    Object.values(state.items).forEach(cat => {
-        Object.values(cat).forEach(item => {
-            if (item.price && item.qty && !item.isTBD) {
-                options += item.price * item.qty;
+    // Calculate category totals
+    let engineTotal = 0;
+    let asiaAccessoriesTotal = 0;
+    let electronicsTotal = 0;
+    let engineName = '';
+    
+    const groups = CATEGORY_GROUPS[state.boatType] || [];
+    
+    Object.entries(state.items).forEach(([cat, items]) => {
+        Object.values(items).forEach(item => {
+            if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                const itemTotal = item.isTBD ? 0 : (item.price * item.qty);
+                
+                if (cat === 'Propulsion / Engine') {
+                    engineTotal += itemTotal;
+                    engineName = item.name;
+                } else {
+                    // Check which group this category belongs to
+                    for (const group of groups) {
+                        if (group.categories && group.categories.includes(cat)) {
+                            if (group.name === 'ASIS Accessories') {
+                                asiaAccessoriesTotal += itemTotal;
+                            } else if (group.name === 'Electronics & Communication') {
+                                electronicsTotal += itemTotal;
+                            }
+                            break;
+                        }
+                        if (group.subgroups) {
+                            for (const subgroup of group.subgroups) {
+                                if (subgroup.categories && subgroup.categories.includes(cat)) {
+                                    if (group.name === 'ASIS Accessories') {
+                                        asiaAccessoriesTotal += itemTotal;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
     });
     
-    const subtotal = boat.price + options;
+    // Calculate totals
+    const boatTotal = boat.price * boatQty;
+    let optionsPerBoat = 0;
+    Object.values(state.items).forEach(cat => {
+        Object.values(cat).forEach(item => {
+            if (item.price && item.qty && !item.isTBD && item.itemIdx !== -1) {
+                optionsPerBoat += item.price * item.qty;
+            }
+        });
+    });
+    const optionsTotal = optionsPerBoat * boatQty;
+    const subtotal = boatTotal + optionsTotal;
     const discountPct = parseFloat(document.getElementById('discount').value) || 0;
     const discount = subtotal * (discountPct / 100);
     const total = subtotal - discount;
     
-    // Header
-    doc.setFillColor(15, 40, 71);
-    doc.rect(0, 0, 210, 40, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.text('ASIS BOATS LLC', 105, 20, {align: 'center'});
-    doc.setFontSize(12);
-    doc.setTextColor(201, 162, 39);
-    doc.text('PROFESSIONAL QUOTATION', 105, 30, {align: 'center'});
+    return {
+        // Quote info
+        quoteNum: document.getElementById('quoteNum').value || 'Q-000',
+        quoteDate: document.getElementById('quoteDate').value || new Date().toLocaleDateString(),
+        quoteTitle: document.getElementById('quoteTitle').value || `${boat.size} ${BOATS[state.boatType].name}`,
+        tender: document.getElementById('tenderNum').value || '',
+        
+        // Customer info
+        custCompany: document.getElementById('custCompany').value || '',
+        custContact: document.getElementById('custName').value || '',
+        custPhone: document.getElementById('custPhone').value || '',
+        custEmail: document.getElementById('custEmail').value || '',
+        custAddress: document.getElementById('custAddress').value || '',
+        
+        // Salesman info
+        salesmanInfo,
+        
+        // Boat info
+        boatType: state.boatType,
+        boatTypeName: BOATS[state.boatType].name,
+        boatSize: boat.size,
+        boatPrice: boat.price,
+        boatQty,
+        boatTotal,
+        
+        // Engine
+        engineName,
+        engineTotal: engineTotal * boatQty,
+        
+        // Category totals
+        asiaAccessoriesTotal: asiaAccessoriesTotal * boatQty,
+        electronicsTotal: electronicsTotal * boatQty,
+        
+        // Overall totals
+        optionsTotal,
+        subtotal,
+        discountPct,
+        discount,
+        total,
+        
+        // Options
+        hideSubPrices,
+        
+        // Terms
+        paymentTerms: document.getElementById('payTerms').value || '',
+        deliveryTimeline: getDeliveryTimeline(),
+        deliveryTerms: document.getElementById('deliveryTerms').value || '',
+        validity: document.getElementById('validity').value || '',
+        notes: document.getElementById('quoteNotes').value || '',
+        
+        // Items for annex
+        items: state.items,
+        categoryGroups: CATEGORY_GROUPS[state.boatType] || []
+    };
+}
+
+// ==================== PAGE 1: COVER PAGE ====================
+async function generateCoverPage(pdfDoc, fonts, formData) {
+    const { rgb } = PDFLib;
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+    const { width, height } = page.getSize();
     
-    // Quote info
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    let y = 50;
+    // Colors
+    const asiaRed = rgb(0.722, 0.196, 0.251); // #B83240
+    const darkGray = rgb(0.4, 0.4, 0.4);
+    const black = rgb(0, 0, 0);
     
-    doc.setFont(undefined, 'bold');
-    doc.text('Quote Details:', 15, y);
-    doc.setFont(undefined, 'normal');
-    y += 7;
-    doc.text(`Quote #: ${document.getElementById('quoteNum').value}`, 15, y);
-    y += 5;
-    doc.text(`Date: ${document.getElementById('quoteDate').value}`, 15, y);
-    y += 5;
-    doc.text(`Validity: ${document.getElementById('validity').value}`, 15, y);
-    y += 5;
-    doc.text(`Payment: ${document.getElementById('payTerms').value}`, 15, y);
-    y += 5;
-    doc.text(`Delivery Terms: ${document.getElementById('deliveryTerms').value}`, 15, y);
-    y += 5;
-    doc.text(`Delivery Timeline: ${getDeliveryTimeline()}`, 15, y);
-    if (salesmanInfo) {
-        y += 7;
-        doc.setFont(undefined, 'bold');
-        doc.text(`Salesman: ${salesmanInfo.name}`, 15, y);
-        doc.setFont(undefined, 'normal');
-        y += 5;
-        doc.text(`${salesmanInfo.email}`, 15, y);
-        y += 5;
-        doc.text(`${salesmanInfo.phone}`, 15, y);
+    // Header - ASIS Logo text (placeholder - will be replaced with actual logo)
+    page.drawText('ASIS', {
+        x: 245,
+        y: height - 60,
+        size: 36,
+        font: fonts.helveticaBold,
+        color: asiaRed
+    });
+    page.drawText('ACES OF THE SEA', {
+        x: 225,
+        y: height - 80,
+        size: 10,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+    
+    // Shield area (left side) - placeholder text
+    page.drawText('ASIS BOATS', {
+        x: 60,
+        y: height - 200,
+        size: 14,
+        font: fonts.helveticaBold,
+        color: black
+    });
+    
+    // "ADVANCE MARITIME SOLUTION" + Quote Number (right side)
+    page.drawText('ADVANCE MARITIME SOLUTION', {
+        x: 280,
+        y: height - 180,
+        size: 14,
+        font: fonts.helveticaBold,
+        color: black
+    });
+    page.drawText(formData.quoteNum, {
+        x: 280,
+        y: height - 200,
+        size: 18,
+        font: fonts.helveticaBold,
+        color: asiaRed
+    });
+    
+    // Quotation Title (Line 1 and potentially Line 2)
+    const titleLines = splitTextToLines(formData.quoteTitle, 50);
+    let yPos = height - 300;
+    titleLines.forEach((line, i) => {
+        page.drawText(line, {
+            x: 60,
+            y: yPos - (i * 25),
+            size: 18,
+            font: fonts.helveticaBold,
+            color: black
+        });
+    });
+    yPos -= (titleLines.length * 25) + 10;
+    
+    // Tender number (if present)
+    if (formData.tender) {
+        page.drawText(`Tender No. ${formData.tender}`, {
+            x: 60,
+            y: yPos,
+            size: 11,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+        yPos -= 30;
     }
     
-    // Customer info
-    y = 50;
-    doc.setFont(undefined, 'bold');
-    doc.text('Customer:', 110, y);
-    doc.setFont(undefined, 'normal');
-    y += 7;
-    doc.text(document.getElementById('custCompany').value || '-', 110, y);
-    y += 5;
-    doc.text(document.getElementById('custName').value || '-', 110, y);
-    y += 5;
-    doc.text(document.getElementById('custEmail').value || '-', 110, y);
-    y += 5;
-    doc.text(document.getElementById('custPhone').value || '-', 110, y);
-    if (tender) {
-        y += 5;
-        doc.text(`Tender: ${tender}`, 110, y);
+    // "Proposed To:" section
+    yPos -= 20;
+    page.drawText('Proposed To:', {
+        x: 60,
+        y: yPos,
+        size: 11,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+    yPos -= 25;
+    
+    // Customer Company
+    if (formData.custCompany) {
+        page.drawText(formData.custCompany, {
+            x: 60,
+            y: yPos,
+            size: 16,
+            font: fonts.helveticaBold,
+            color: black
+        });
+        yPos -= 22;
     }
     
-    // Items table
-    y = 115;
-    doc.setFillColor(15, 40, 71);
-    doc.rect(15, y, 180, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.text('Description', 17, y + 5.5);
-    doc.text('Qty', 130, y + 5.5);
-    if (!hideSubPrices) {
-        doc.text('Unit Price', 150, y + 5.5);
-        doc.text('Total', 180, y + 5.5);
+    // Customer Contact
+    if (formData.custContact) {
+        page.drawText(formData.custContact, {
+            x: 60,
+            y: yPos,
+            size: 14,
+            font: fonts.helveticaBold,
+            color: black
+        });
+        yPos -= 22;
     }
     
-    y += 10;
-    doc.setTextColor(0, 0, 0);
-    
-    // Boat
-    doc.text(`${BOATS[state.boatType].name} - ${boat.size}`, 17, y + 4);
-    doc.text('1', 130, y + 4);
-    if (!hideSubPrices) {
-        doc.text(fmtPrice(boat.price), 150, y + 4);
-        doc.text(fmtPrice(boat.price), 175, y + 4);
+    // Address with icon placeholder
+    if (formData.custAddress) {
+        page.drawText(`📍 ${formData.custAddress}`, {
+            x: 60,
+            y: yPos,
+            size: 10,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+        yPos -= 18;
     }
-    y += 8;
     
-    // Options
-    Object.entries(state.items).forEach(([cat, items]) => {
+    // Phone
+    if (formData.custPhone) {
+        page.drawText(`📞 ${formData.custPhone}`, {
+            x: 60,
+            y: yPos,
+            size: 10,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+        yPos -= 18;
+    }
+    
+    // Email
+    if (formData.custEmail) {
+        page.drawText(`✉️ ${formData.custEmail}`, {
+            x: 60,
+            y: yPos,
+            size: 10,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+    }
+    
+    // "Prepared" section (bottom left)
+    let prepY = 180;
+    page.drawText('Prepared', {
+        x: 60,
+        y: prepY,
+        size: 11,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+    prepY -= 25;
+    
+    if (formData.salesmanInfo) {
+        page.drawText(formData.salesmanInfo.name.toUpperCase(), {
+            x: 60,
+            y: prepY,
+            size: 14,
+            font: fonts.helveticaBold,
+            color: black
+        });
+        prepY -= 18;
+        page.drawText(`✉️ ${formData.salesmanInfo.email}`, {
+            x: 60,
+            y: prepY,
+            size: 10,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+        prepY -= 16;
+        page.drawText(`📞 ${formData.salesmanInfo.phone}`, {
+            x: 60,
+            y: prepY,
+            size: 10,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+    }
+    
+    // Footer
+    page.drawText('ASIS Boats L.L.C, Jebel Ali Industrial Area 2, Dubai, United Arab Emirates, Tel: +971 880 4441, www.asisboats.com', {
+        x: 60,
+        y: 30,
+        size: 8,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+}
+
+// ==================== PAGE 3: QUOTATION DETAILS ====================
+async function generateQuotationPage(pdfDoc, fonts, formData) {
+    const { rgb } = PDFLib;
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+    const { width, height } = page.getSize();
+    
+    // Colors
+    const asiaRed = rgb(0.722, 0.196, 0.251);
+    const darkGray = rgb(0.4, 0.4, 0.4);
+    const black = rgb(0, 0, 0);
+    const lightGray = rgb(0.9, 0.9, 0.9);
+    
+    // Diamond logo placeholder
+    page.drawText('◆', {
+        x: 285,
+        y: height - 40,
+        size: 24,
+        font: fonts.helvetica,
+        color: asiaRed
+    });
+    
+    // Title
+    page.drawText('QUOTATION', {
+        x: 200,
+        y: height - 90,
+        size: 28,
+        font: fonts.timesItalic,
+        color: black
+    });
+    
+    // Ref. No. and Date line
+    let y = height - 130;
+    page.drawText('Ref. No.', { x: 60, y, size: 10, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.quoteNum, { x: 110, y, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText('Date:', { x: 420, y, size: 10, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.quoteDate, { x: 450, y, size: 11, font: fonts.helveticaBold, color: black });
+    
+    // Horizontal line
+    y -= 15;
+    page.drawLine({ start: { x: 60, y }, end: { x: 535, y }, thickness: 0.5, color: lightGray });
+    
+    // TO: section
+    y -= 25;
+    page.drawRectangle({ x: 60, y: y - 5, width: 40, height: 18, color: asiaRed });
+    page.drawText('TO:', { x: 65, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    
+    // FROM: section
+    page.drawRectangle({ x: 310, y: y - 5, width: 50, height: 18, color: asiaRed });
+    page.drawText('FROM:', { x: 315, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    
+    // Customer details
+    y -= 25;
+    const leftCol = 60;
+    const leftValCol = 140;
+    const rightCol = 310;
+    const rightValCol = 380;
+    
+    page.drawText('Company /Dep.:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custCompany || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Company:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText('ASIS BOATS LLC, DUBAI UAE', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Point of Contact:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custContact || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Telephone:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText('+971 (0)4 880 4441', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Contact #:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custPhone || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Sales Person:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.salesmanInfo?.name || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Email:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custEmail || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Contact #:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.salesmanInfo?.phone || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Address:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    const addrLines = splitTextToLines(formData.custAddress || '-', 35);
+    addrLines.forEach((line, i) => {
+        page.drawText(line, { x: leftValCol, y: y - (i * 12), size: 9, font: fonts.helvetica, color: black });
+    });
+    page.drawText('Email:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.salesmanInfo?.email || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    // Description table header
+    y -= 50;
+    page.drawRectangle({ x: 60, y: y - 5, width: 475, height: 20, color: asiaRed });
+    page.drawText('Description', { x: 70, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    page.drawText('Qty.', { x: 400, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    if (!formData.hideSubPrices) {
+        page.drawText('Price', { x: 445, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+        page.drawText('TOTAL AED', { x: 485, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    }
+    
+    // Table rows
+    y -= 30;
+    
+    // Row 1: Boat/Quotation Title
+    page.drawText(formData.quoteTitle, { x: 70, y, size: 10, font: fonts.helveticaBold, color: black });
+    page.drawText(formData.boatQty.toString(), { x: 405, y, size: 10, font: fonts.helvetica, color: black });
+    if (!formData.hideSubPrices) {
+        page.drawText(formatNumber(formData.boatPrice), { x: 440, y, size: 10, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.boatTotal), { x: 485, y, size: 10, font: fonts.helvetica, color: black });
+    }
+    
+    // Dotted line
+    y -= 15;
+    drawDottedLine(page, 70, y, 525, y, darkGray);
+    
+    // Row 2: Engine
+    y -= 15;
+    if (formData.engineName) {
+        const engineText = `- ${formData.engineName}`;
+        page.drawText(truncateText(engineText, 60), { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+        if (!formData.hideSubPrices && formData.engineTotal > 0) {
+            page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+        }
+    }
+    
+    // Row 3: ASIS ACCESSORIES
+    y -= 20;
+    page.drawText('- ASIS ACCESSORIES - (ANNEX-1)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+    if (!formData.hideSubPrices && formData.asiaAccessoriesTotal > 0) {
+        page.drawText(formatNumber(formData.asiaAccessoriesTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+    }
+    
+    // Row 4: ELECTRONIC AND COMMUNICATION
+    y -= 20;
+    page.drawText('- ELECTRONIC AND COMMUNICATION - (ANNEX-2)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+    if (!formData.hideSubPrices && formData.electronicsTotal > 0) {
+        page.drawText(formatNumber(formData.electronicsTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+    }
+    
+    // Row 5: TECHNICAL SPECIFICATIONS
+    y -= 20;
+    page.drawText('- TECHNICAL SPECIFICATIONS - (ANNEX-3)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+    
+    // More dotted lines for empty rows
+    for (let i = 0; i < 3; i++) {
+        y -= 20;
+        drawDottedLine(page, 70, y, 525, y, lightGray);
+    }
+    
+    // Note and Total box
+    y -= 40;
+    page.drawRectangle({ x: 60, y: y - 60, width: 475, height: 80, borderColor: black, borderWidth: 1 });
+    
+    // Note
+    page.drawText('Note:', { x: 70, y: y - 5, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    if (formData.notes) {
+        const noteLines = splitTextToLines(formData.notes, 50);
+        noteLines.slice(0, 3).forEach((line, i) => {
+            page.drawText(line, { x: 100, y: y - 5 - (i * 12), size: 9, font: fonts.helvetica, color: black });
+        });
+    }
+    
+    // Total
+    page.drawText('TOTAL AED', { x: 400, y: y - 25, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText(formatNumber(formData.total), { x: 480, y: y - 25, size: 14, font: fonts.helveticaBold, color: black });
+    
+    // Terms section
+    y -= 100;
+    const termY = y;
+    const termLabelX = 60;
+    const termValueX = 160;
+    const lineHeight = 18;
+    
+    page.drawText('Term of Payment', { x: termLabelX, y: termY, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.paymentTerms}`, { x: termValueX, y: termY, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Delivery Schedule', { x: termLabelX, y: termY - lineHeight, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.deliveryTimeline}`, { x: termValueX, y: termY - lineHeight, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Delivery Terms', { x: termLabelX, y: termY - lineHeight * 2, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.deliveryTerms}`, { x: termValueX, y: termY - lineHeight * 2, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Warranty', { x: termLabelX, y: termY - lineHeight * 3, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(': Click here to read full warranty', { x: termValueX, y: termY - lineHeight * 3, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    
+    page.drawText('Validity', { x: termLabelX, y: termY - lineHeight * 4, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.validity}`, { x: termValueX, y: termY - lineHeight * 4, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Country of Origin', { x: termLabelX, y: termY - lineHeight * 5, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(': United Arab Emirates', { x: termValueX, y: termY - lineHeight * 5, size: 9, font: fonts.helveticaBold, color: black });
+    
+    // SIGN AND STAMP box
+    page.drawRectangle({ x: 420, y: termY - lineHeight * 5.5, width: 115, height: 60, borderColor: black, borderWidth: 0.5 });
+    page.drawText('SIGN AND STAMP', { x: 440, y: termY - lineHeight * 4, size: 8, font: fonts.helvetica, color: darkGray });
+    
+    // Footer
+    page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
+    page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+}
+
+// ==================== PAGE 4: ANNEX PAGES ====================
+async function generateAnnexPages(pdfDoc, fonts, formData) {
+    const { rgb } = PDFLib;
+    
+    // Colors
+    const asiaRed = rgb(0.722, 0.196, 0.251);
+    const darkGray = rgb(0.4, 0.4, 0.4);
+    const black = rgb(0, 0, 0);
+    
+    // Collect items by annex category
+    const annexItems = {
+        'ASIS ACCESSORIES': [],
+        'ELECTRONICS & COMMUNICATION': []
+    };
+    
+    const groups = formData.categoryGroups;
+    
+    Object.entries(formData.items).forEach(([cat, items]) => {
         Object.values(items).forEach(item => {
-            if (item.name && y < 260) {
-                const name = item.name.length > 55 ? item.name.substring(0, 52) + '...' : item.name;
-                doc.text(name, 17, y + 4);
-                doc.text(item.qty.toString(), 130, y + 4);
-                if (!hideSubPrices) {
-                    const unitPrice = item.isTBD ? 'TBD' : fmtPrice(item.price);
-                    const itemTotal = item.isTBD ? 'TBD' : fmtPrice(item.price * item.qty);
-                    doc.text(unitPrice, 150, y + 4);
-                    doc.text(itemTotal, 175, y + 4);
+            if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                // Skip engine - it's shown separately
+                if (cat === 'Propulsion / Engine') return;
+                
+                // Determine which annex this belongs to
+                for (const group of groups) {
+                    if (group.categories && group.categories.includes(cat)) {
+                        if (group.name === 'ASIS Accessories') {
+                            annexItems['ASIS ACCESSORIES'].push({ name: item.name, qty: item.qty * formData.boatQty });
+                        } else if (group.name === 'Electronics & Communication') {
+                            annexItems['ELECTRONICS & COMMUNICATION'].push({ name: item.name, qty: item.qty * formData.boatQty });
+                        }
+                        break;
+                    }
+                    if (group.subgroups) {
+                        for (const subgroup of group.subgroups) {
+                            if (subgroup.categories && subgroup.categories.includes(cat)) {
+                                if (group.name === 'ASIS Accessories') {
+                                    annexItems['ASIS ACCESSORIES'].push({ name: item.name, qty: item.qty * formData.boatQty });
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
-                y += 7;
             }
         });
     });
     
-    // Totals
-    y += 5;
-    doc.line(15, y, 195, y);
-    y += 7;
+    // Generate annex page(s)
+    let page = pdfDoc.addPage([595.28, 841.89]);
+    let { width, height } = page.getSize();
+    let y = height - 60;
     
-    if (!hideSubPrices) {
-        doc.text(`Subtotal: ${fmtPrice(subtotal)}`, 150, y);
-        if (discountPct > 0) {
-            y += 6;
-            doc.text(`Discount (${discountPct}%): -${fmtPrice(discount)}`, 150, y);
-        }
-        y += 8;
+    // Header
+    page.drawText('◆', { x: 285, y: height - 30, size: 20, font: fonts.helvetica, color: asiaRed });
+    page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+    
+    y = height - 100;
+    
+    // ANNEX 1: ASIS ACCESSORIES
+    page.drawText('ANNEX 1:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
+    y -= 20;
+    page.drawText('ASIS ACCESSORIES', { x: 60, y, size: 11, font: fonts.helveticaBold, color: asiaRed });
+    y -= 25;
+    
+    if (annexItems['ASIS ACCESSORIES'].length === 0) {
+        page.drawText('- No accessories selected', { x: 70, y, size: 10, font: fonts.helvetica, color: darkGray });
+        y -= 20;
     } else {
-        if (discountPct > 0) {
-            doc.text(`Discount: ${discountPct}%`, 150, y);
-            y += 8;
+        for (const item of annexItems['ASIS ACCESSORIES']) {
+            if (y < 100) {
+                // Add new page
+                page = pdfDoc.addPage([595.28, 841.89]);
+                y = height - 60;
+                page.drawText('◆', { x: 285, y: height - 30, size: 20, font: fonts.helvetica, color: asiaRed });
+                page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+                y = height - 100;
+            }
+            
+            const itemText = `- ${item.name} (Qty: ${item.qty})`;
+            page.drawText(truncateText(itemText, 80), { x: 70, y, size: 10, font: fonts.helvetica, color: black });
+            y -= 18;
         }
     }
     
-    doc.setFont(undefined, 'bold');
-    doc.setFontSize(12);
-    doc.text(`TOTAL: ${fmtPrice(total)}`, 150, y);
-    
-    // Notes
-    const notes = document.getElementById('quoteNotes').value;
-    if (notes && y < 250) {
-        y += 15;
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
-        doc.text('Notes:', 15, y);
-        doc.setFont(undefined, 'normal');
-        y += 6;
-        const splitNotes = doc.splitTextToSize(notes, 170);
-        doc.text(splitNotes, 15, y);
+    // ANNEX 2: ELECTRONICS & COMMUNICATION
+    y -= 30;
+    if (y < 150) {
+        page = pdfDoc.addPage([595.28, 841.89]);
+        y = height - 60;
+        page.drawText('◆', { x: 285, y: height - 30, size: 20, font: fonts.helvetica, color: asiaRed });
+        page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+        y = height - 100;
     }
     
-    // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text('ASIS Boats L.L.C, Jebel Ali Industrial Area 2, Dubai, UAE | Tel: +971 880 4441 | www.asisboats.com', 105, 290, {align: 'center'});
+    page.drawText('ANNEX 2:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
+    y -= 20;
+    page.drawText('ELECTRONICS & COMMUNICATION', { x: 60, y, size: 11, font: fonts.helveticaBold, color: asiaRed });
+    y -= 25;
     
-    doc.save(`${document.getElementById('quoteNum').value}.pdf`);
+    if (annexItems['ELECTRONICS & COMMUNICATION'].length === 0) {
+        page.drawText('- No electronics selected', { x: 70, y, size: 10, font: fonts.helvetica, color: darkGray });
+    } else {
+        for (const item of annexItems['ELECTRONICS & COMMUNICATION']) {
+            if (y < 100) {
+                page = pdfDoc.addPage([595.28, 841.89]);
+                y = height - 60;
+                page.drawText('◆', { x: 285, y: height - 30, size: 20, font: fonts.helvetica, color: asiaRed });
+                page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+                y = height - 100;
+            }
+            
+            const itemText = `- ${item.name} (Qty: ${item.qty})`;
+            page.drawText(truncateText(itemText, 80), { x: 70, y, size: 10, font: fonts.helvetica, color: black });
+            y -= 18;
+        }
+    }
+    
+    // Footer on last annex page
+    page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
+    page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+}
+
+// ==================== EMBED STATIC PDF ====================
+async function embedStaticPdf(pdfDoc, pdfPath, description) {
+    try {
+        const url = PDF_CONFIG.baseUrl + pdfPath;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            console.warn(`Could not load ${description} from ${url}`);
+            return;
+        }
+        
+        const pdfBytes = await response.arrayBuffer();
+        const externalPdf = await PDFLib.PDFDocument.load(pdfBytes);
+        const pages = await pdfDoc.copyPages(externalPdf, externalPdf.getPageIndices());
+        
+        pages.forEach(page => pdfDoc.addPage(page));
+        console.log(`Embedded ${description}: ${pages.length} page(s)`);
+    } catch (error) {
+        console.warn(`Failed to embed ${description}:`, error);
+    }
+}
+
+// ==================== FALLBACK SIMPLIFIED PDF ====================
+async function generateSimplifiedPDF() {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    
+    const formData = gatherFormData();
+    const pdfDoc = await PDFDocument.create();
+    
+    const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const timesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+    
+    const fonts = { helvetica, helveticaBold, timesRoman, timesItalic };
+    
+    // Generate only the dynamic pages
+    await generateCoverPage(pdfDoc, fonts, formData);
+    await generateQuotationPage(pdfDoc, fonts, formData);
+    await generateAnnexPages(pdfDoc, fonts, formData);
+    
+    // Save and download
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${formData.quoteNum}_simplified.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+// ==================== HELPER FUNCTIONS ====================
+function splitTextToLines(text, maxChars) {
+    if (!text) return [''];
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+    
+    words.forEach(word => {
+        if ((currentLine + ' ' + word).trim().length <= maxChars) {
+            currentLine = (currentLine + ' ' + word).trim();
+        } else {
+            if (currentLine) lines.push(currentLine);
+            currentLine = word;
+        }
+    });
+    if (currentLine) lines.push(currentLine);
+    return lines.length > 0 ? lines : [''];
+}
+
+function truncateText(text, maxChars) {
+    if (!text) return '';
+    return text.length > maxChars ? text.substring(0, maxChars - 3) + '...' : text;
+}
+
+function formatNumber(num) {
+    if (typeof num !== 'number') return '0';
+    return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function drawDottedLine(page, x1, y1, x2, y2, color) {
+    const dotSpacing = 3;
+    const distance = x2 - x1;
+    const dots = Math.floor(distance / dotSpacing);
+    
+    for (let i = 0; i < dots; i++) {
+        const x = x1 + (i * dotSpacing);
+        page.drawCircle({ x, y: y1, size: 0.5, color });
+    }
 }
 
 function downloadCSV() {
     const boat = BOATS[state.boatType].sizes[state.sizeIdx];
+    const boatQty = parseInt(document.getElementById('boatQty')?.value) || 1;
     const salesman = document.getElementById('salesman').value;
     
     let csv = 'Description,Quantity,Unit Price,Total\n';
-    csv += `"${BOATS[state.boatType].name} - ${boat.size}",1,${boat.price},${boat.price}\n`;
+    csv += `"${BOATS[state.boatType].name} - ${boat.size}",${boatQty},${boat.price},${boat.price * boatQty}\n`;
     
     Object.entries(state.items).forEach(([cat, items]) => {
         Object.values(items).forEach(item => {
-            if (item.name) {
-                const total = item.isTBD ? 'TBD' : item.price * item.qty;
+            // Skip "None" selections (itemIdx === -1)
+            if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                const totalQty = item.qty * boatQty;
+                const total = item.isTBD ? 'TBD' : item.price * totalQty;
                 const price = item.isTBD ? 'TBD' : item.price;
-                csv += `"${item.name}",${item.qty},${price},${total}\n`;
+                csv += `"${item.name}",${totalQty},${price},${total}\n`;
             }
         });
     });
