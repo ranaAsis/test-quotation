@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASIS Boats - Professional Quotation System V29</title>
+    <title>ASIS Boats - Professional Quotation System V30</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -98,112 +98,6 @@
         .curr-btn.active { background: var(--gold); border-color: var(--gold); color: white; }
         
         /* Categories */
-        .category { margin-bottom: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--gray-200); }
-        .cat-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
-        .cat-header.nav-cat { background: linear-gradient(135deg, #1a3a5c, #0f2847); }
-        .cat-header.elec-cat { background: linear-gradient(135deg, #2d4a6d, #1a3a5c); }
-        .cat-header.seat-cat { background: linear-gradient(135deg, #3d5a7d, #2d4a6d); }
-        .cat-header.safe-cat { background: linear-gradient(135deg, #4d6a8d, #3d5a7d); }
-        .cat-header.deck-cat { background: linear-gradient(135deg, #5d7a9d, #4d6a8d); }
-        .cat-header.tube-cat { background: linear-gradient(135deg, #6d8aad, #5d7a9d); }
-        .cat-header.maint-cat { background: linear-gradient(135deg, #7d9abd, #6d8aad); }
-        .cat-header.misc-cat { background: linear-gradient(135deg, #8daacd, #7d9abd); }
-        .cat-header span { color: white; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .cat-header .arrow { color: white; font-size: 12px; transition: transform 0.3s; }
-        .category.open .cat-header .arrow { transform: rotate(180deg); }
-        .cat-items { display: none; background: var(--white); }
-        .category.open .cat-items { display: block; }
-        
-        /* Items */
-        .item { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--gray-100); transition: all 0.2s; }
-        .item:hover { background: var(--gray-50); }
-        .item-check { width: 22px; height: 22px; border: 2px solid var(--gray-300); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-right: 14px; flex-shrink: 0; }
-        .item-check.checked { background: var(--gold); border-color: var(--gold); color: white; }
-        .item-info { flex: 1; min-width: 0; }
-        .item-name { font-size: 13px; font-weight: 500; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-desc { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
-        .item-price { font-weight: 700; font-size: 14px; color: var(--gold-dark); margin-left: 15px; white-space: nowrap; }
-        .item-qty { display: flex; align-items: center; gap: 8px; margin-left: 15px; }
-        .qty-btn { width: 28px; height: 28px; border: 1px solid var(--gray-300); background: var(--white); border-radius: 6px; cursor: pointer; font-size: 16px; color: var(--navy); transition: all 0.2s; }
-        .qty-btn:hover { background: var(--gray-100); }
-        .qty-val { width: 35px; text-align: center; font-weight: 600; font-size: 14px; color: var(--navy); }
-        
-        /* TBD price */
-        .price-input { width: 90px; padding: 6px 10px; border: 2px solid var(--warning); border-radius: 6px; font-size: 13px; font-weight: 600; text-align: right; background: #fff9e6; }
-        .tbd-badge { background: var(--warning); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-        
-        /* Custom items */
-        .custom-btn { background: var(--gold); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
-        .custom-btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-overlay.show { display: flex; }
-        .modal { background: white; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .modal-header { padding: 20px 25px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { font-size: 18px; color: var(--navy); }
-        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); }
-        .modal-body { padding: 25px; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 6px; text-transform: uppercase; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 14px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 14px; transition: all 0.2s; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--gold); }
-        .modal-footer { padding: 20px 25px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; }
-        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.3s; }
-        .btn-secondary { background: var(--gray-200); border: none; color: var(--gray-700); }
-        .btn-primary { background: var(--gold); border: none; color: white; }
-        .btn-primary:hover { background: var(--gold-dark); }
-        
-        /* Form page */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-        .form-section { margin-bottom: 25px; }
-        .form-section h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gold); display: inline-block; }
-        
-        /* Navigation */
-        .nav-btns { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--gray-200); }
-        .nav-btn { padding: 14px 30px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
-        .nav-btn.prev { background: var(--gray-200); border: none; color: var(--gray-700); }
-        .nav-btn.prev:hover { background: var(--gray-300); }
-        .nav-btn.next { background: var(--gold); border: none; color: white; }
-        .nav-btn.next:hover { background: var(--gold-dark); }
-        .nav-btn.generate { background: linear-gradient(135deg, var(--success), #20c997); border: none; color: white; padding: 16px 40px; font-size: 16px; }
-        .nav-btn.generate:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(40,167,69,0.3); }
-        
-        /* Review */
-        .review-section { background: var(--gray-50); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .review-section h4 { font-size: 14px; color: var(--navy); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--gray-200); }
-        .review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-        .review-item { background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--gray-200); }
-        .review-item .label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; }
-        .review-item .value { font-size: 14px; font-weight: 600; color: var(--navy); margin-top: 4px; }
-        .acc-list { max-height: 300px; overflow-y: auto; }
-        .acc-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
-        .acc-item:last-child { border-bottom: none; }
-        .acc-item .name { color: var(--navy); flex: 1; }
-        .acc-item .qty { color: var(--gray-500); margin: 0 15px; }
-        .acc-item .price { font-weight: 600; color: var(--gold-dark); }
-        
-        /* Loading */
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,40,71,0.95); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
-        .loading-overlay.show { display: flex; }
-        .spinner { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { color: white; margin-top: 20px; font-size: 16px; font-weight: 500; }
-        .loading-sub { color: var(--gray-400); margin-top: 8px; font-size: 13px; }
-
-        /* Salesman selection */
-        .salesman-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .salesman-card { background: var(--gray-100); border: 2px solid var(--gray-200); border-radius: 10px; padding: 15px; cursor: pointer; transition: all 0.3s; }
-        .salesman-card:hover { border-color: var(--navy); }
-        .salesman-card.selected { border-color: var(--gold); background: linear-gradient(135deg, #fef5f6, #fdeaec); }
-        .salesman-card .name { font-weight: 600; color: var(--navy); font-size: 14px; }
-        .salesman-card .email { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
-
-        /* Trailer Info */
-        .trailer-info { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px 16px; margin-top: 10px; font-size: 12px; color: #856404; display: none; }
-        .trailer-info.show { display: block; }
-    </style>
-</head>
-<body>
         .category { background: var(--white); border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
         .cat-header { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: var(--white); padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
         .cat-header:hover { background: linear-gradient(135deg, var(--navy-light), var(--navy)); }
@@ -2604,169 +2498,49 @@ function gatherFormData() {
         boatTotal,
         
         // Engine
-// =====================================================
-// PDF GENERATION - V29 with Template Overlay Positioning
-// Page size: Letter (612 x 792 pts)
-// =====================================================
-
-const PDF_CONFIG = {
-    baseUrl: './',
-    staticPdfs: {
-        page1Template: 'assets/pdf/page1_template.pdf',
-        page3Template: 'assets/pdf/page3_template.pdf',
-        companyPresentation: 'assets/pdf/company_presentation.pdf',
-        termsConditions: 'assets/pdf/terms_conditions.pdf'
-    },
-    specSheets: {
-        grp: 'specs/grp_',
-        aluminum: 'specs/alu_',
-        hdib: 'specs/hdib_'
-    }
-};
-
-// ===== TEXT POSITION CONFIGURATION FOR PAGE 1 =====
-// Letter size: 612 x 792 pts
-// Adjust these values to align text with your template
-const PAGE1_POSITIONS = {
-    // Page size: US Letter 612 x 792 pts
-    // Conversion from 150 DPI image: pdf_pt = pixel / 2.083, pdf_y = 792 - (pixel_y / 2.083)
-    
-    // Quote number - right side, below "ADVANCE MARITIME SOLUTION" header (red text)
-    // Measured from example: x≈595px, y≈215px from top
-    quoteNumber: { x: 285, y: 689, size: 16 },
-    
-    // Quotation title - left side, bold black text
-    // Measured from example: x≈87px, y≈535px from top for first line
-    title: { x: 42, y: 535, size: 18, lineHeight: 26 },
-    
-    // Tender number - below title, smaller gray text
-    // Measured from example: x≈87px, appears after title lines
-    tender: { x: 42, y: 500, size: 11 },
-    
-    // Customer section - "Proposed To:" label is pre-printed on template
-    // Recalibrated positions based on example:
-    customer: {
-        company: { x: 42, y: 432, size: 16 },   // Bold company name (e.g., "GEKKO Trading FZCO")
-        contact: { x: 42, y: 408, size: 14 },   // Bold contact name (e.g., "Mr. Mohammad, Manager")
-        address: { x: 55, y: 388, size: 10 },   // Gray text next to pin icon
-        phone: { x: 55, y: 373, size: 10 },     // Gray text next to phone icon
-        email: { x: 55, y: 358, size: 10 }      // Gray text next to email icon
-    },
-    
-    // Salesman section - "Prepared" label is pre-printed on template
-    // Recalibrated positions:
-    salesman: {
-        name: { x: 42, y: 178, size: 14 },      // Bold uppercase name (e.g., "MARIO EL HOYEK")
-        email: { x: 55, y: 160, size: 10 },     // Gray text next to email icon
-        phone: { x: 55, y: 145, size: 10 }      // Gray text next to phone icon
-    }
-};
-
-// ===== QUOTATION PAGE POSITIONS (Page 3 - items table) =====
-const PAGE3_POSITIONS = {
-    title: { x: 200, y: 720, size: 14 },
-    tableStart: { x: 50, y: 680 },
-    rowHeight: 18
-};
-
-async function generatePDF() {
-    console.log('Starting PDF generation v30...');
-    
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    loadingOverlay.classList.add('show');
-    
-    try {
-        const { PDFDocument, rgb, StandardFonts } = PDFLib;
+        engineName,
+        engineTotal: engineTotal * boatQty,
         
-        // Create new PDF document
-        const pdfDoc = await PDFDocument.create();
+        // Category totals
+        asiaAccessoriesTotal: asiaAccessoriesTotal * boatQty,
+        electronicsTotal: electronicsTotal * boatQty,
         
-        // Load fonts
-        const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-        const fonts = { helvetica, helveticaBold };
+        // Overall totals
+        optionsTotal,
+        subtotal,
+        discountPct,
+        discount,
+        total,
         
-        // Gather form data
-        const formData = gatherFormData();
+        // Options
+        hideSubPrices,
         
-        console.log('Form data gathered:', formData);
+        // Terms
+        paymentTerms: document.getElementById('payTerms').value || '',
+        deliveryTimeline: getDeliveryTimeline(),
+        deliveryTerms: document.getElementById('deliveryTerms').value || '',
+        validity: document.getElementById('validity').value || '',
+        notes: document.getElementById('quoteNotes').value || '',
         
-        // Generate pages
-        await generateCoverPage(pdfDoc, fonts, formData);
-        await addCompanyPresentation(pdfDoc);
-        await generateQuotationPage(pdfDoc, fonts, formData);
-        await generateAccessoriesAnnex(pdfDoc, fonts, formData);
-        await addTechnicalSpecs(pdfDoc, formData);
-        await addTermsConditions(pdfDoc);
-        
-        // Save and download
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        
-        // Download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ASIS_Quotation_${formData.quoteNum.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        console.log('PDF generated successfully!');
-        
-    } catch (error) {
-        console.error('PDF generation error:', error);
-        alert('Error generating PDF: ' + error.message);
-    } finally {
-        loadingOverlay.classList.remove('show');
-    }
-}
-
-function gatherFormData() {
-    const selectedSalesman = document.querySelector('.salesman-card.selected');
-    let salesmanInfo = null;
-    if (selectedSalesman) {
-        salesmanInfo = {
-            name: selectedSalesman.querySelector('.name').textContent,
-            email: selectedSalesman.querySelector('.email').textContent,
-            phone: selectedSalesman.dataset.phone || '+971 4 880 4477'
-        };
-    }
-    
-    return {
-        quoteNum: document.getElementById('quoteNum')?.value || 'Q.2025.001',
-        quoteTitle: document.getElementById('quoteTitle')?.value || 'QUOTATION',
-        tender: document.getElementById('tender')?.value || '',
-        custCompany: document.getElementById('custCompany')?.value || '',
-        custContact: document.getElementById('custContact')?.value || '',
-        custAddress: document.getElementById('custAddress')?.value || '',
-        custPhone: document.getElementById('custPhone')?.value || '',
-        custEmail: document.getElementById('custEmail')?.value || '',
-        boatType: selectedBoat.type || 'GRP RHIB',
-        boatSize: selectedBoat.size || '5.1M',
-        boatPrice: selectedBoat.price || 0,
-        accessories: selectedAccessories,
-        customItems: customItems,
-        totalPrice: calculateTotal(),
-        currency: currentCurrency,
-        salesmanInfo: salesmanInfo,
-        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+        // Items for annex
+        items: state.items,
+        categoryGroups: CATEGORY_GROUPS[state.boatType] || []
     };
 }
 
-// ===== PAGE 1: COVER PAGE (Using Template) =====
+// ==================== PAGE 1: COVER PAGE (Using Template) ====================
 async function generateCoverPage(pdfDoc, fonts, formData) {
     const { rgb } = PDFLib;
     
     try {
-        // Load template PDF
+        // Try to load the page 1 template
         const templateUrl = PDF_CONFIG.baseUrl + PDF_CONFIG.staticPdfs.page1Template;
-        console.log('Loading template from:', templateUrl);
-        
         const response = await fetch(templateUrl);
+        
         if (!response.ok) {
-            throw new Error('Template not found: ' + response.status);
+            console.warn('Page 1 template not found, generating from scratch');
+            await generateCoverPageFallback(pdfDoc, fonts, formData);
+            return;
         }
         
         const templateBytes = await response.arrayBuffer();
@@ -2774,132 +2548,147 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         const [templatePage] = await pdfDoc.copyPages(templatePdf, [0]);
         pdfDoc.addPage(templatePage);
         
-        // Get the page
-        const pages = pdfDoc.getPages();
-        const page = pages[pages.length - 1];
+        // Get the page we just added (last page)
+        const page = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
         const { width, height } = page.getSize();
         
-        console.log(`Page 1 size: ${width} x ${height}`);
-        
         // Colors
-        const asiaRed = rgb(0.722, 0.196, 0.251);
+        const asiaRed = rgb(0.722, 0.196, 0.251); // #B83240
+        const darkGray = rgb(0.3, 0.3, 0.3);
         const black = rgb(0, 0, 0);
-        const darkGray = rgb(0.35, 0.35, 0.35);
         
-        // === QUOTE NUMBER ===
+        // === ADD DYNAMIC TEXT ON TOP OF TEMPLATE ===
+        
+        // Quote Number (right side, below "ADVANCE MARITIME SOLUTION")
+        // Adjusted based on example: IBQ-0-22-095 position
         page.drawText(formData.quoteNum, {
-            x: PAGE1_POSITIONS.quoteNumber.x,
-            y: PAGE1_POSITIONS.quoteNumber.y,
-            size: PAGE1_POSITIONS.quoteNumber.size,
+            x: 380,
+            y: height - 148,
+            size: 18,
             font: fonts.helveticaBold,
             color: asiaRed
         });
         
-        // === QUOTATION TITLE ===
-        const titleLines = splitTextToLines(formData.quoteTitle, 40);
-        let titleY = PAGE1_POSITIONS.title.y;
-        let lastTitleY = titleY;
-        titleLines.forEach((line, i) => {
-            lastTitleY = titleY - (i * PAGE1_POSITIONS.title.lineHeight);
-            page.drawText(line, {
-                x: PAGE1_POSITIONS.title.x,
-                y: lastTitleY,
-                size: PAGE1_POSITIONS.title.size,
-                font: fonts.helveticaBold,
-                color: black
-            });
+        // Quotation Title Line 1 - adjusted position
+        const titleLines = splitTextToLines(formData.quoteTitle, 45);
+        page.drawText(titleLines[0] || '', {
+            x: 85,
+            y: height - 260,
+            size: 18,
+            font: fonts.helveticaBold,
+            color: black
         });
         
-        // === TENDER NUMBER ===
-        // Position dynamically below the title lines
+        // Quotation Title Line 2 (if exists)
+        if (titleLines[1]) {
+            page.drawText(titleLines[1], {
+                x: 85,
+                y: height - 285,
+                size: 18,
+                font: fonts.helveticaBold,
+                color: black
+            });
+        }
+        
+        // Tender Number (if present)
+        let yOffset = titleLines[1] ? 310 : 285;
         if (formData.tender) {
-            const tenderY = lastTitleY - 22; // 22pt below last title line
             page.drawText('Tender No. ' + formData.tender, {
-                x: PAGE1_POSITIONS.tender.x,
-                y: tenderY,
-                size: PAGE1_POSITIONS.tender.size,
+                x: 85,
+                y: height - yOffset,
+                size: 11,
                 font: fonts.helvetica,
                 color: darkGray
             });
         }
         
-        // === CUSTOMER INFORMATION ===
-        const cust = PAGE1_POSITIONS.customer;
-        
+        // Customer Company (after "Proposed To:" label on template)
+        let custY = height - 360;
         if (formData.custCompany) {
             page.drawText(formData.custCompany, {
-                x: cust.company.x,
-                y: cust.company.y,
-                size: cust.company.size,
+                x: 85,
+                y: custY,
+                size: 16,
                 font: fonts.helveticaBold,
                 color: black
             });
+            custY -= 26;
         }
         
+        // Customer Contact
         if (formData.custContact) {
             page.drawText(formData.custContact, {
-                x: cust.contact.x,
-                y: cust.contact.y,
-                size: cust.contact.size,
+                x: 85,
+                y: custY,
+                size: 14,
                 font: fonts.helveticaBold,
                 color: black
             });
+            custY -= 24;
         }
         
+        // Customer Address (next to pin icon)
         if (formData.custAddress) {
             page.drawText(formData.custAddress, {
-                x: cust.address.x,
-                y: cust.address.y,
-                size: cust.address.size,
+                x: 100,
+                y: custY,
+                size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
+            custY -= 18;
         }
         
+        // Customer Phone (next to phone icon)
         if (formData.custPhone) {
             page.drawText(formData.custPhone, {
-                x: cust.phone.x,
-                y: cust.phone.y,
-                size: cust.phone.size,
+                x: 100,
+                y: custY,
+                size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
+            custY -= 18;
         }
         
+        // Customer Email (next to email icon)
         if (formData.custEmail) {
             page.drawText(formData.custEmail, {
-                x: cust.email.x,
-                y: cust.email.y,
-                size: cust.email.size,
+                x: 100,
+                y: custY,
+                size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
         }
         
-        // === SALESMAN INFORMATION ===
+        // Salesman Name (after "Prepared" label on template)
+        let salesY = height - 555;
         if (formData.salesmanInfo) {
-            const sales = PAGE1_POSITIONS.salesman;
-            
             page.drawText(formData.salesmanInfo.name.toUpperCase(), {
-                x: sales.name.x,
-                y: sales.name.y,
-                size: sales.name.size,
+                x: 85,
+                y: salesY,
+                size: 14,
                 font: fonts.helveticaBold,
                 color: black
             });
+            salesY -= 22;
             
+            // Salesman Email (next to email icon)
             page.drawText(formData.salesmanInfo.email, {
-                x: sales.email.x,
-                y: sales.email.y,
-                size: sales.email.size,
+                x: 100,
+                y: salesY,
+                size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
+            salesY -= 18;
             
+            // Salesman Phone (next to phone icon)
             page.drawText(formData.salesmanInfo.phone, {
-                x: sales.phone.x,
-                y: sales.phone.y,
-                size: sales.phone.size,
+                x: 100,
+                y: salesY,
+                size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
@@ -2908,336 +2697,503 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         console.log('Cover page generated from template');
         
     } catch (error) {
-        console.error('Template error:', error);
+        console.warn('Error loading template, using fallback:', error);
         await generateCoverPageFallback(pdfDoc, fonts, formData);
     }
 }
 
-// Fallback cover page
+// Fallback cover page if template is not available
 async function generateCoverPageFallback(pdfDoc, fonts, formData) {
     const { rgb } = PDFLib;
-    const page = pdfDoc.addPage([612, 792]); // Letter size
-    const { height } = page.getSize();
-    
-    const asiaRed = rgb(0.722, 0.196, 0.251);
-    const black = rgb(0, 0, 0);
-    
-    page.drawText('ASIS BOATS QUOTATION', {
-        x: 180, y: height - 100,
-        size: 24, font: fonts.helveticaBold, color: asiaRed
-    });
-    
-    page.drawText(formData.quoteNum, {
-        x: 220, y: height - 140,
-        size: 20, font: fonts.helveticaBold, color: black
-    });
-    
-    page.drawText('(Template not found - using fallback)', {
-        x: 180, y: height - 180,
-        size: 10, font: fonts.helvetica, color: rgb(0.5, 0.5, 0.5)
-    });
-    
-    // Customer info
-    let y = height - 300;
-    page.drawText('CUSTOMER:', { x: 50, y, size: 12, font: fonts.helveticaBold, color: black });
-    y -= 20;
-    if (formData.custCompany) { page.drawText(formData.custCompany, { x: 50, y, size: 11, font: fonts.helvetica, color: black }); y -= 15; }
-    if (formData.custContact) { page.drawText(formData.custContact, { x: 50, y, size: 11, font: fonts.helvetica, color: black }); y -= 15; }
-    if (formData.custAddress) { page.drawText(formData.custAddress, { x: 50, y, size: 10, font: fonts.helvetica, color: black }); y -= 15; }
-    if (formData.custPhone) { page.drawText(formData.custPhone, { x: 50, y, size: 10, font: fonts.helvetica, color: black }); y -= 15; }
-    if (formData.custEmail) { page.drawText(formData.custEmail, { x: 50, y, size: 10, font: fonts.helvetica, color: black }); }
-    
-    console.log('Cover page generated (fallback)');
-}
-
-// ===== PAGE 2: Company Presentation =====
-async function addCompanyPresentation(pdfDoc) {
-    try {
-        const url = PDF_CONFIG.baseUrl + PDF_CONFIG.staticPdfs.companyPresentation;
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.warn('Company presentation not found');
-            return;
-        }
-        const pdfBytes = await response.arrayBuffer();
-        const srcPdf = await PDFLib.PDFDocument.load(pdfBytes);
-        const pageIndices = srcPdf.getPageIndices();
-        const copiedPages = await pdfDoc.copyPages(srcPdf, pageIndices);
-        copiedPages.forEach(page => pdfDoc.addPage(page));
-        console.log('Company presentation added');
-    } catch (error) {
-        console.warn('Could not add company presentation:', error);
-    }
-}
-
-// ===== PAGE 3: Quotation Details =====
-async function generateQuotationPage(pdfDoc, fonts, formData) {
-    const { rgb } = PDFLib;
-    
-    try {
-        // Try to load page 3 template
-        const templateUrl = PDF_CONFIG.baseUrl + PDF_CONFIG.staticPdfs.page3Template;
-        const response = await fetch(templateUrl);
-        
-        if (response.ok) {
-            const templateBytes = await response.arrayBuffer();
-            const templatePdf = await PDFLib.PDFDocument.load(templateBytes);
-            const [templatePage] = await pdfDoc.copyPages(templatePdf, [0]);
-            pdfDoc.addPage(templatePage);
-        } else {
-            pdfDoc.addPage([612, 792]);
-        }
-        
-        const pages = pdfDoc.getPages();
-        const page = pages[pages.length - 1];
-        const { width, height } = page.getSize();
-        
-        const black = rgb(0, 0, 0);
-        const darkGray = rgb(0.4, 0.4, 0.4);
-        const asiaRed = rgb(0.722, 0.196, 0.251);
-        
-        // Title
-        page.drawText('QUOTATION DETAILS', {
-            x: 220, y: height - 80,
-            size: 16, font: fonts.helveticaBold, color: black
-        });
-        
-        // Quote info
-        page.drawText(`Quote: ${formData.quoteNum}`, {
-            x: 50, y: height - 120,
-            size: 10, font: fonts.helvetica, color: darkGray
-        });
-        page.drawText(`Date: ${formData.date}`, {
-            x: 450, y: height - 120,
-            size: 10, font: fonts.helvetica, color: darkGray
-        });
-        
-        // Boat details
-        let y = height - 160;
-        page.drawText('VESSEL SPECIFICATION', {
-            x: 50, y,
-            size: 12, font: fonts.helveticaBold, color: black
-        });
-        
-        y -= 25;
-        page.drawText(`${formData.boatType} - ${formData.boatSize}`, {
-            x: 50, y,
-            size: 14, font: fonts.helveticaBold, color: asiaRed
-        });
-        
-        // Price
-        y -= 25;
-        const priceStr = formatCurrency(formData.boatPrice, formData.currency);
-        page.drawText(`Base Price: ${priceStr}`, {
-            x: 50, y,
-            size: 11, font: fonts.helvetica, color: black
-        });
-        
-        // Accessories summary
-        y -= 40;
-        page.drawText('ACCESSORIES & OPTIONS', {
-            x: 50, y,
-            size: 12, font: fonts.helveticaBold, color: black
-        });
-        
-        y -= 20;
-        let accTotal = 0;
-        
-        // List selected accessories
-        formData.accessories.forEach(acc => {
-            if (y < 100) return; // Don't overflow page
-            
-            const itemPrice = acc.price * acc.qty;
-            accTotal += itemPrice;
-            
-            page.drawText(acc.name, {
-                x: 50, y,
-                size: 9, font: fonts.helvetica, color: black
-            });
-            
-            page.drawText(`x${acc.qty}`, {
-                x: 400, y,
-                size: 9, font: fonts.helvetica, color: darkGray
-            });
-            
-            const priceText = acc.isTBD ? 'TBD' : formatCurrency(itemPrice, formData.currency);
-            page.drawText(priceText, {
-                x: 480, y,
-                size: 9, font: fonts.helveticaBold, color: black
-            });
-            
-            y -= 15;
-        });
-        
-        // Custom items
-        formData.customItems.forEach(item => {
-            if (y < 100) return;
-            
-            const itemPrice = item.price * item.qty;
-            accTotal += itemPrice;
-            
-            page.drawText(item.name + ' (Custom)', {
-                x: 50, y,
-                size: 9, font: fonts.helvetica, color: black
-            });
-            
-            page.drawText(`x${item.qty}`, {
-                x: 400, y,
-                size: 9, font: fonts.helvetica, color: darkGray
-            });
-            
-            page.drawText(formatCurrency(itemPrice, formData.currency), {
-                x: 480, y,
-                size: 9, font: fonts.helveticaBold, color: black
-            });
-            
-            y -= 15;
-        });
-        
-        // Total
-        y -= 20;
-        page.drawRectangle({
-            x: 350, y: y - 5, width: 210, height: 30,
-            color: rgb(0.95, 0.95, 0.95)
-        });
-        
-        page.drawText('TOTAL:', {
-            x: 360, y: y + 5,
-            size: 12, font: fonts.helveticaBold, color: black
-        });
-        
-        page.drawText(formatCurrency(formData.totalPrice, formData.currency), {
-            x: 450, y: y + 5,
-            size: 14, font: fonts.helveticaBold, color: asiaRed
-        });
-        
-        console.log('Quotation page generated');
-        
-    } catch (error) {
-        console.error('Error generating quotation page:', error);
-    }
-}
-
-// ===== PAGE 4: Accessories Annex =====
-async function generateAccessoriesAnnex(pdfDoc, fonts, formData) {
-    if (formData.accessories.length === 0 && formData.customItems.length === 0) {
-        return; // No accessories to list
-    }
-    
-    const { rgb } = PDFLib;
-    const page = pdfDoc.addPage([612, 792]);
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
     const { width, height } = page.getSize();
     
-    const black = rgb(0, 0, 0);
-    const darkGray = rgb(0.4, 0.4, 0.4);
+    // Colors
     const asiaRed = rgb(0.722, 0.196, 0.251);
+    const darkGray = rgb(0.4, 0.4, 0.4);
+    const black = rgb(0, 0, 0);
+    
+    // Header - ASIS text placeholder
+    page.drawText('ASIS BOATS', {
+        x: 220,
+        y: height - 60,
+        size: 28,
+        font: fonts.helveticaBold,
+        color: asiaRed
+    });
+    page.drawText('ACES OF THE SEA', {
+        x: 225,
+        y: height - 80,
+        size: 10,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+    
+    // "ADVANCE MARITIME SOLUTION" + Quote Number
+    page.drawText('ADVANCE MARITIME SOLUTION', {
+        x: 250,
+        y: height - 180,
+        size: 14,
+        font: fonts.helveticaBold,
+        color: black
+    });
+    page.drawText(formData.quoteNum, {
+        x: 250,
+        y: height - 205,
+        size: 20,
+        font: fonts.helveticaBold,
+        color: asiaRed
+    });
+    
+    // Quotation Title
+    const titleLines = splitTextToLines(formData.quoteTitle, 50);
+    let yPos = height - 320;
+    titleLines.forEach((line, i) => {
+        page.drawText(line, {
+            x: 50,
+            y: yPos - (i * 25),
+            size: 18,
+            font: fonts.helveticaBold,
+            color: black
+        });
+    });
+    yPos -= (titleLines.length * 25) + 10;
+    
+    // Tender
+    if (formData.tender) {
+        page.drawText('Tender No. ' + formData.tender, {
+            x: 50,
+            y: yPos,
+            size: 11,
+            font: fonts.helvetica,
+            color: darkGray
+        });
+        yPos -= 30;
+    }
+    
+    // "Proposed To:" section
+    yPos -= 20;
+    page.drawText('Proposed To:', {
+        x: 50,
+        y: yPos,
+        size: 11,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+    yPos -= 25;
+    
+    if (formData.custCompany) {
+        page.drawText(formData.custCompany, { x: 50, y: yPos, size: 16, font: fonts.helveticaBold, color: black });
+        yPos -= 22;
+    }
+    if (formData.custContact) {
+        page.drawText(formData.custContact, { x: 50, y: yPos, size: 14, font: fonts.helveticaBold, color: black });
+        yPos -= 22;
+    }
+    if (formData.custAddress) {
+        page.drawText(formData.custAddress, { x: 50, y: yPos, size: 10, font: fonts.helvetica, color: darkGray });
+        yPos -= 18;
+    }
+    if (formData.custPhone) {
+        page.drawText(formData.custPhone, { x: 50, y: yPos, size: 10, font: fonts.helvetica, color: darkGray });
+        yPos -= 18;
+    }
+    if (formData.custEmail) {
+        page.drawText(formData.custEmail, { x: 50, y: yPos, size: 10, font: fonts.helvetica, color: darkGray });
+    }
+    
+    // "Prepared" section
+    let prepY = 180;
+    page.drawText('Prepared', { x: 50, y: prepY, size: 11, font: fonts.helvetica, color: darkGray });
+    prepY -= 25;
+    
+    if (formData.salesmanInfo) {
+        page.drawText(formData.salesmanInfo.name.toUpperCase(), { x: 50, y: prepY, size: 14, font: fonts.helveticaBold, color: black });
+        prepY -= 18;
+        page.drawText(formData.salesmanInfo.email, { x: 50, y: prepY, size: 10, font: fonts.helvetica, color: darkGray });
+        prepY -= 16;
+        page.drawText(formData.salesmanInfo.phone, { x: 50, y: prepY, size: 10, font: fonts.helvetica, color: darkGray });
+    }
+    
+    // Footer
+    page.drawText('ASIS Boats L.L.C, Jebel Ali Industrial Area 2, Dubai, UAE | Tel: +971 880 4441 | www.asisboats.com', {
+        x: 80,
+        y: 30,
+        size: 8,
+        font: fonts.helvetica,
+        color: darkGray
+    });
+}
+
+// ==================== PAGE 3: QUOTATION DETAILS ====================
+async function generateQuotationPage(pdfDoc, fonts, formData) {
+    const { rgb } = PDFLib;
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+    const { width, height } = page.getSize();
+    
+    // Colors
+    const asiaRed = rgb(0.722, 0.196, 0.251);
+    const darkGray = rgb(0.4, 0.4, 0.4);
+    const black = rgb(0, 0, 0);
+    const lightGray = rgb(0.9, 0.9, 0.9);
+    
+    // Diamond logo
+    drawDiamond(page, 297, height - 35, 15, asiaRed);
+    
+    // Title
+    page.drawText('QUOTATION', {
+        x: 200,
+        y: height - 90,
+        size: 28,
+        font: fonts.timesItalic,
+        color: black
+    });
+    
+    // Ref. No. and Date line
+    let y = height - 130;
+    page.drawText('Ref. No.', { x: 60, y, size: 10, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.quoteNum, { x: 110, y, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText('Date:', { x: 420, y, size: 10, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.quoteDate, { x: 450, y, size: 11, font: fonts.helveticaBold, color: black });
+    
+    // Horizontal line
+    y -= 15;
+    page.drawLine({ start: { x: 60, y }, end: { x: 535, y }, thickness: 0.5, color: lightGray });
+    
+    // TO: section
+    y -= 25;
+    page.drawRectangle({ x: 60, y: y - 5, width: 40, height: 18, color: asiaRed });
+    page.drawText('TO:', { x: 65, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    
+    // FROM: section
+    page.drawRectangle({ x: 310, y: y - 5, width: 50, height: 18, color: asiaRed });
+    page.drawText('FROM:', { x: 315, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    
+    // Customer details
+    y -= 25;
+    const leftCol = 60;
+    const leftValCol = 140;
+    const rightCol = 310;
+    const rightValCol = 380;
+    
+    page.drawText('Company /Dep.:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custCompany || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Company:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText('ASIS BOATS LLC, DUBAI UAE', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Point of Contact:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custContact || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Telephone:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText('+971 (0)4 880 4441', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Contact #:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custPhone || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Sales Person:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.salesmanInfo?.name || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Email:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.custEmail || '-', { x: leftValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText('Contact #:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.salesmanInfo?.phone || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    y -= 18;
+    page.drawText('Address:', { x: leftCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    const addrLines = splitTextToLines(formData.custAddress || '-', 35);
+    addrLines.forEach((line, i) => {
+        page.drawText(line, { x: leftValCol, y: y - (i * 12), size: 9, font: fonts.helvetica, color: black });
+    });
+    page.drawText('Email:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.salesmanInfo?.email || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
+    
+    // Description table header
+    y -= 50;
+    page.drawRectangle({ x: 60, y: y - 5, width: 475, height: 20, color: asiaRed });
+    page.drawText('Description', { x: 70, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    page.drawText('Qty.', { x: 400, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    if (!formData.hideSubPrices) {
+        page.drawText('Price', { x: 445, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+        page.drawText('TOTAL AED', { x: 485, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    }
+    
+    // Table rows
+    y -= 30;
+    
+    // Row 1: Boat/Quotation Title
+    page.drawText(formData.quoteTitle, { x: 70, y, size: 10, font: fonts.helveticaBold, color: black });
+    page.drawText(formData.boatQty.toString(), { x: 405, y, size: 10, font: fonts.helvetica, color: black });
+    if (!formData.hideSubPrices) {
+        page.drawText(formatNumber(formData.boatPrice), { x: 440, y, size: 10, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.boatTotal), { x: 485, y, size: 10, font: fonts.helvetica, color: black });
+    }
+    
+    // Dotted line
+    y -= 15;
+    drawDottedLine(page, 70, y, 525, y, darkGray);
+    
+    // Row 2: Engine
+    y -= 15;
+    if (formData.engineName) {
+        const engineText = `- ${formData.engineName}`;
+        page.drawText(truncateText(engineText, 60), { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+        if (!formData.hideSubPrices && formData.engineTotal > 0) {
+            page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+        }
+    }
+    
+    // Row 3: ASIS ACCESSORIES
+    y -= 20;
+    page.drawText('- ASIS ACCESSORIES - (ANNEX-1)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+    if (!formData.hideSubPrices && formData.asiaAccessoriesTotal > 0) {
+        page.drawText(formatNumber(formData.asiaAccessoriesTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+    }
+    
+    // Row 4: ELECTRONIC AND COMMUNICATION
+    y -= 20;
+    page.drawText('- ELECTRONIC AND COMMUNICATION - (ANNEX-2)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+    if (!formData.hideSubPrices && formData.electronicsTotal > 0) {
+        page.drawText(formatNumber(formData.electronicsTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+    }
+    
+    // Row 5: TECHNICAL SPECIFICATIONS
+    y -= 20;
+    page.drawText('- TECHNICAL SPECIFICATIONS - (ANNEX-3)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+    
+    // More dotted lines for empty rows
+    for (let i = 0; i < 3; i++) {
+        y -= 20;
+        drawDottedLine(page, 70, y, 525, y, lightGray);
+    }
+    
+    // Note and Total box
+    y -= 40;
+    page.drawRectangle({ x: 60, y: y - 60, width: 475, height: 80, borderColor: black, borderWidth: 1 });
+    
+    // Note
+    page.drawText('Note:', { x: 70, y: y - 5, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    if (formData.notes) {
+        const noteLines = splitTextToLines(formData.notes, 50);
+        noteLines.slice(0, 3).forEach((line, i) => {
+            page.drawText(line, { x: 100, y: y - 5 - (i * 12), size: 9, font: fonts.helvetica, color: black });
+        });
+    }
+    
+    // Total
+    page.drawText('TOTAL AED', { x: 400, y: y - 25, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText(formatNumber(formData.total), { x: 480, y: y - 25, size: 14, font: fonts.helveticaBold, color: black });
+    
+    // Terms section
+    y -= 100;
+    const termY = y;
+    const termLabelX = 60;
+    const termValueX = 160;
+    const lineHeight = 18;
+    
+    page.drawText('Term of Payment', { x: termLabelX, y: termY, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.paymentTerms}`, { x: termValueX, y: termY, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Delivery Schedule', { x: termLabelX, y: termY - lineHeight, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.deliveryTimeline}`, { x: termValueX, y: termY - lineHeight, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Delivery Terms', { x: termLabelX, y: termY - lineHeight * 2, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.deliveryTerms}`, { x: termValueX, y: termY - lineHeight * 2, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Warranty', { x: termLabelX, y: termY - lineHeight * 3, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(': Click here to read full warranty', { x: termValueX, y: termY - lineHeight * 3, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    
+    page.drawText('Validity', { x: termLabelX, y: termY - lineHeight * 4, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(`: ${formData.validity}`, { x: termValueX, y: termY - lineHeight * 4, size: 9, font: fonts.helveticaBold, color: black });
+    
+    page.drawText('Country of Origin', { x: termLabelX, y: termY - lineHeight * 5, size: 9, font: fonts.helvetica, color: darkGray });
+    page.drawText(': United Arab Emirates', { x: termValueX, y: termY - lineHeight * 5, size: 9, font: fonts.helveticaBold, color: black });
+    
+    // SIGN AND STAMP box
+    page.drawRectangle({ x: 420, y: termY - lineHeight * 5.5, width: 115, height: 60, borderColor: black, borderWidth: 0.5 });
+    page.drawText('SIGN AND STAMP', { x: 440, y: termY - lineHeight * 4, size: 8, font: fonts.helvetica, color: darkGray });
+    
+    // Footer
+    page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
+    page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+}
+
+// ==================== PAGE 4: ANNEX PAGES ====================
+async function generateAnnexPages(pdfDoc, fonts, formData) {
+    const { rgb } = PDFLib;
+    
+    // Colors
+    const asiaRed = rgb(0.722, 0.196, 0.251);
+    const darkGray = rgb(0.4, 0.4, 0.4);
+    const black = rgb(0, 0, 0);
+    
+    // Collect items by annex category
+    const annexItems = {
+        'ASIS ACCESSORIES': [],
+        'ELECTRONICS & COMMUNICATION': []
+    };
+    
+    const groups = formData.categoryGroups;
+    
+    Object.entries(formData.items).forEach(([cat, items]) => {
+        Object.values(items).forEach(item => {
+            if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                // Skip engine - it's shown separately
+                if (cat === 'Propulsion / Engine') return;
+                
+                // Determine which annex this belongs to
+                for (const group of groups) {
+                    if (group.categories && group.categories.includes(cat)) {
+                        if (group.name === 'ASIS Accessories') {
+                            annexItems['ASIS ACCESSORIES'].push({ name: item.name, qty: item.qty * formData.boatQty });
+                        } else if (group.name === 'Electronics & Communication') {
+                            annexItems['ELECTRONICS & COMMUNICATION'].push({ name: item.name, qty: item.qty * formData.boatQty });
+                        }
+                        break;
+                    }
+                    if (group.subgroups) {
+                        for (const subgroup of group.subgroups) {
+                            if (subgroup.categories && subgroup.categories.includes(cat)) {
+                                if (group.name === 'ASIS Accessories') {
+                                    annexItems['ASIS ACCESSORIES'].push({ name: item.name, qty: item.qty * formData.boatQty });
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+    
+    // Generate annex page(s)
+    let page = pdfDoc.addPage([595.28, 841.89]);
+    let { width, height } = page.getSize();
+    let y = height - 60;
     
     // Header
-    page.drawText('ACCESSORIES ANNEX', {
-        x: 220, y: height - 50,
-        size: 16, font: fonts.helveticaBold, color: black
-    });
+    drawDiamond(page, 297, height - 25, 12, asiaRed);
+    page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
     
-    // Table header
-    let y = height - 100;
-    page.drawRectangle({
-        x: 40, y: y - 5, width: 530, height: 25,
-        color: rgb(0.06, 0.16, 0.28) // Navy
-    });
+    y = height - 100;
     
-    page.drawText('ITEM', { x: 50, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText('QTY', { x: 380, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText('UNIT PRICE', { x: 420, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText('TOTAL', { x: 510, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    // ANNEX 1: ASIS ACCESSORIES
+    page.drawText('ANNEX 1:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
+    y -= 20;
+    page.drawText('ASIS ACCESSORIES', { x: 60, y, size: 11, font: fonts.helveticaBold, color: asiaRed });
+    y -= 25;
     
-    y -= 30;
-    let rowNum = 0;
-    
-    // List all accessories
-    [...formData.accessories, ...formData.customItems].forEach(item => {
-        if (y < 80) return;
-        
-        // Alternating row color
-        if (rowNum % 2 === 0) {
-            page.drawRectangle({
-                x: 40, y: y - 5, width: 530, height: 20,
-                color: rgb(0.97, 0.97, 0.97)
-            });
-        }
-        
-        const itemTotal = item.price * item.qty;
-        const unitPrice = item.isTBD ? 'TBD' : formatCurrency(item.price, formData.currency);
-        const totalPrice = item.isTBD ? 'TBD' : formatCurrency(itemTotal, formData.currency);
-        
-        page.drawText(item.name.substring(0, 50), { x: 50, y, size: 9, font: fonts.helvetica, color: black });
-        page.drawText(item.qty.toString(), { x: 390, y, size: 9, font: fonts.helvetica, color: black });
-        page.drawText(unitPrice, { x: 420, y, size: 9, font: fonts.helvetica, color: black });
-        page.drawText(totalPrice, { x: 505, y, size: 9, font: fonts.helveticaBold, color: black });
-        
+    if (annexItems['ASIS ACCESSORIES'].length === 0) {
+        page.drawText('- No accessories selected', { x: 70, y, size: 10, font: fonts.helvetica, color: darkGray });
         y -= 20;
-        rowNum++;
-    });
+    } else {
+        for (const item of annexItems['ASIS ACCESSORIES']) {
+            if (y < 100) {
+                // Add new page
+                page = pdfDoc.addPage([595.28, 841.89]);
+                y = height - 60;
+                drawDiamond(page, 297, height - 25, 12, asiaRed);
+                page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+                y = height - 100;
+            }
+            
+            const itemText = `- ${item.name} (Qty: ${item.qty})`;
+            page.drawText(truncateText(itemText, 80), { x: 70, y, size: 10, font: fonts.helvetica, color: black });
+            y -= 18;
+        }
+    }
     
-    console.log('Accessories annex generated');
-}
-
-// ===== PAGE 5: Technical Specifications =====
-async function addTechnicalSpecs(pdfDoc, formData) {
-    try {
-        // Determine spec file based on boat type and size
-        let prefix = PDF_CONFIG.specSheets.grp;
-        if (formData.boatType.toLowerCase().includes('aluminum')) {
-            prefix = PDF_CONFIG.specSheets.aluminum;
-        } else if (formData.boatType.toLowerCase().includes('hdib')) {
-            prefix = PDF_CONFIG.specSheets.hdib;
-        }
-        
-        // Convert size (e.g., "5.1M" to "5_1")
-        const sizeNum = formData.boatSize.replace('M', '').replace('.', '_');
-        const specUrl = PDF_CONFIG.baseUrl + prefix + sizeNum + '.pdf';
-        
-        console.log('Loading spec sheet:', specUrl);
-        
-        const response = await fetch(specUrl);
-        if (!response.ok) {
-            console.warn('Spec sheet not found:', specUrl);
-            return;
-        }
-        
-        const pdfBytes = await response.arrayBuffer();
-        const srcPdf = await PDFLib.PDFDocument.load(pdfBytes);
-        const pageIndices = srcPdf.getPageIndices();
-        const copiedPages = await pdfDoc.copyPages(srcPdf, pageIndices);
-        copiedPages.forEach(page => pdfDoc.addPage(page));
-        
-        console.log('Technical specs added');
-        
-    } catch (error) {
-        console.warn('Could not add tech specs:', error);
+    // ANNEX 2: ELECTRONICS & COMMUNICATION
+    y -= 30;
+    if (y < 150) {
+        page = pdfDoc.addPage([595.28, 841.89]);
+        y = height - 60;
+        drawDiamond(page, 297, height - 25, 12, asiaRed);
+        page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+        y = height - 100;
     }
+    
+    page.drawText('ANNEX 2:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
+    y -= 20;
+    page.drawText('ELECTRONICS & COMMUNICATION', { x: 60, y, size: 11, font: fonts.helveticaBold, color: asiaRed });
+    y -= 25;
+    
+    if (annexItems['ELECTRONICS & COMMUNICATION'].length === 0) {
+        page.drawText('- No electronics selected', { x: 70, y, size: 10, font: fonts.helvetica, color: darkGray });
+    } else {
+        for (const item of annexItems['ELECTRONICS & COMMUNICATION']) {
+            if (y < 100) {
+                page = pdfDoc.addPage([595.28, 841.89]);
+                y = height - 60;
+                drawDiamond(page, 297, height - 25, 12, asiaRed);
+                page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+                y = height - 100;
+            }
+            
+            const itemText = `- ${item.name} (Qty: ${item.qty})`;
+            page.drawText(truncateText(itemText, 80), { x: 70, y, size: 10, font: fonts.helvetica, color: black });
+            y -= 18;
+        }
+    }
+    
+    // Footer on last annex page
+    page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
+    page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
 }
 
-// ===== PAGE 6: Terms & Conditions =====
-async function addTermsConditions(pdfDoc) {
+// ==================== EMBED STATIC PDF ====================
+async function embedStaticPdf(pdfDoc, pdfPath, description) {
     try {
-        const url = PDF_CONFIG.baseUrl + PDF_CONFIG.staticPdfs.termsConditions;
+        const url = PDF_CONFIG.baseUrl + pdfPath;
         const response = await fetch(url);
+        
         if (!response.ok) {
-            console.warn('Terms & conditions not found');
+            console.warn(`Could not load ${description} from ${url}`);
             return;
         }
+        
         const pdfBytes = await response.arrayBuffer();
-        const srcPdf = await PDFLib.PDFDocument.load(pdfBytes);
-        const pageIndices = srcPdf.getPageIndices();
-        const copiedPages = await pdfDoc.copyPages(srcPdf, pageIndices);
-        copiedPages.forEach(page => pdfDoc.addPage(page));
-        console.log('Terms & conditions added');
+        const externalPdf = await PDFLib.PDFDocument.load(pdfBytes);
+        const pages = await pdfDoc.copyPages(externalPdf, externalPdf.getPageIndices());
+        
+        pages.forEach(page => pdfDoc.addPage(page));
+        console.log(`Embedded ${description}: ${pages.length} page(s)`);
     } catch (error) {
-        console.warn('Could not add terms:', error);
+        console.warn(`Failed to embed ${description}:`, error);
     }
 }
 
-// ===== HELPER FUNCTIONS =====
+// ==================== FALLBACK SIMPLIFIED PDF ====================
+async function generateSimplifiedPDF() {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    
+    const formData = gatherFormData();
+    const pdfDoc = await PDFDocument.create();
+    
+    const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const timesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+    
+    const fonts = { helvetica, helveticaBold, timesRoman, timesItalic };
+    
+    // Generate only the dynamic pages
+    await generateCoverPage(pdfDoc, fonts, formData);
+    await generateQuotationPage(pdfDoc, fonts, formData);
+    await generateAnnexPages(pdfDoc, fonts, formData);
+    
+    // Save and download
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${formData.quoteNum}_simplified.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+// ==================== HELPER FUNCTIONS ====================
 function splitTextToLines(text, maxChars) {
     if (!text) return [''];
     const words = text.split(' ');
@@ -3253,20 +3209,99 @@ function splitTextToLines(text, maxChars) {
         }
     });
     if (currentLine) lines.push(currentLine);
-    
-    return lines;
+    return lines.length > 0 ? lines : [''];
 }
 
-function formatCurrency(amount, currency) {
-    if (typeof amount !== 'number' || isNaN(amount)) return 'TBD';
+function truncateText(text, maxChars) {
+    if (!text) return '';
+    return text.length > maxChars ? text.substring(0, maxChars - 3) + '...' : text;
+}
+
+function formatNumber(num) {
+    if (typeof num !== 'number') return '0';
+    return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function drawDottedLine(page, x1, y1, x2, y2, color) {
+    const dotSpacing = 3;
+    const distance = x2 - x1;
+    const dots = Math.floor(distance / dotSpacing);
     
-    const symbols = { 'USD': '$', 'AED': 'AED ', 'EUR': '€' };
-    const symbol = symbols[currency] || '$';
+    for (let i = 0; i < dots; i++) {
+        const x = x1 + (i * dotSpacing);
+        page.drawCircle({ x, y: y1, size: 0.5, color });
+    }
+}
+
+// Draw a diamond shape (ASIS logo placeholder)
+function drawDiamond(page, x, y, size, color) {
+    const half = size / 2;
+    // Draw as a rotated square using lines
+    page.drawLine({ start: { x: x, y: y + half }, end: { x: x + half, y: y }, thickness: 2, color });
+    page.drawLine({ start: { x: x + half, y: y }, end: { x: x, y: y - half }, thickness: 2, color });
+    page.drawLine({ start: { x: x, y: y - half }, end: { x: x - half, y: y }, thickness: 2, color });
+    page.drawLine({ start: { x: x - half, y: y }, end: { x: x, y: y + half }, thickness: 2, color });
+}
+
+// Draw a location pin icon
+function drawLocationPin(page, x, y, color) {
+    // Simple circle with a point below
+    page.drawCircle({ x: x, y: y + 3, size: 4, color, borderWidth: 1.5, borderColor: color });
+    page.drawLine({ start: { x: x - 3, y: y + 1 }, end: { x: x, y: y - 5 }, thickness: 1.5, color });
+    page.drawLine({ start: { x: x + 3, y: y + 1 }, end: { x: x, y: y - 5 }, thickness: 1.5, color });
+}
+
+// Draw a phone icon
+function drawPhoneIcon(page, x, y, color) {
+    // Simple rectangle for phone body
+    page.drawRectangle({ x: x - 3, y: y - 5, width: 6, height: 10, borderColor: color, borderWidth: 1.5 });
+    page.drawCircle({ x: x, y: y - 3, size: 1, color });
+}
+
+// Draw an envelope icon
+function drawEnvelopeIcon(page, x, y, color) {
+    // Rectangle body
+    page.drawRectangle({ x: x - 5, y: y - 3, width: 10, height: 7, borderColor: color, borderWidth: 1.5 });
+    // V shape for flap
+    page.drawLine({ start: { x: x - 5, y: y + 4 }, end: { x: x, y: y }, thickness: 1.5, color });
+    page.drawLine({ start: { x: x + 5, y: y + 4 }, end: { x: x, y: y }, thickness: 1.5, color });
+}
+
+function downloadCSV() {
+    const boat = BOATS[state.boatType].sizes[state.sizeIdx];
+    const boatQty = parseInt(document.getElementById('boatQty')?.value) || 1;
+    const salesman = document.getElementById('salesman').value;
     
-    return symbol + amount.toLocaleString('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
+    let csv = 'Description,Quantity,Unit Price,Total\n';
+    csv += `"${BOATS[state.boatType].name} - ${boat.size}",${boatQty},${boat.price},${boat.price * boatQty}\n`;
+    
+    Object.entries(state.items).forEach(([cat, items]) => {
+        Object.values(items).forEach(item => {
+            // Skip "None" selections (itemIdx === -1)
+            if (item.name && item.itemIdx !== -1 && item.qty > 0) {
+                const totalQty = item.qty * boatQty;
+                const total = item.isTBD ? 'TBD' : item.price * totalQty;
+                const price = item.isTBD ? 'TBD' : item.price;
+                csv += `"${item.name}",${totalQty},${price},${total}\n`;
+            }
+        });
     });
+    
+    csv += `\nQuote #,${document.getElementById('quoteNum').value}\n`;
+    csv += `Date,${document.getElementById('quoteDate').value}\n`;
+    csv += `Salesman,${salesman}\n`;
+    csv += `Customer,${document.getElementById('custCompany').value}\n`;
+    
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${document.getElementById('quoteNum').value}.csv`;
+    a.click();
 }
 
-// End of PDF Generation Code
+// Init
+init();
+</script>
+</body>
+</html>
