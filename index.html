@@ -2331,10 +2331,10 @@ function getSpecPdfFilename() {
         return `alu_${sizeStr}.pdf`;
     } else if (state.boatType === 'fiberglass') {
         return `grp_${sizeStr}.pdf`;
-    } else {
-        // Inflatable - specs not yet available
-        return null;
+    } else if (state.boatType === 'inflatable') {
+        return `hdib_${sizeStr}.pdf`;
     }
+    return null;
 }
 
 // ==================== EXPORT ====================
@@ -2559,12 +2559,16 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         
         // === ADD DYNAMIC TEXT ON TOP OF TEMPLATE ===
         // Using exact PDF coordinates from measurement
+        // ALIGNMENT OFFSET - Adjust these if text needs to shift:
+        // Positive X_OFFSET moves text RIGHT, Negative Y_OFFSET moves text DOWN
+        const X_OFFSET = 5;   // Shift right (increase to move more right)
+        const Y_OFFSET = -10;  // Shift down (more negative = more down)
         
-        // Quote Number (RIGHT-ALIGNED to x≈560, y=627)
+        // Quote Number (RIGHT-ALIGNED, right edge at x=442, y=627)
         const quoteNumWidth = fonts.helveticaBold.widthOfTextAtSize(formData.quoteNum, 18);
         page.drawText(formData.quoteNum, {
-            x: 560 - quoteNumWidth,
-            y: 627,
+            x: 442 - quoteNumWidth + X_OFFSET,
+            y: 627 + Y_OFFSET,
             size: 18,
             font: fonts.helveticaBold,
             color: asiaRed
@@ -2573,8 +2577,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Quotation Title Line 1 (x=63, y=518)
         const titleLines = splitTextToLines(formData.quoteTitle, 45);
         page.drawText(titleLines[0] || '', {
-            x: 63,
-            y: 518,
+            x: 63 + X_OFFSET,
+            y: 518 + Y_OFFSET,
             size: 18,
             font: fonts.helveticaBold,
             color: black
@@ -2583,8 +2587,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Quotation Title Line 2 (x=62, y=494)
         if (titleLines[1]) {
             page.drawText(titleLines[1], {
-                x: 62,
-                y: 494,
+                x: 62 + X_OFFSET,
+                y: 494 + Y_OFFSET,
                 size: 18,
                 font: fonts.helveticaBold,
                 color: black
@@ -2594,8 +2598,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Tender Number (x=62, y=474)
         if (formData.tender) {
             page.drawText('Tender No. ' + formData.tender, {
-                x: 62,
-                y: 474,
+                x: 62 + X_OFFSET,
+                y: 474 + Y_OFFSET,
                 size: 11,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2605,8 +2609,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Customer Company (x=63, y=416)
         if (formData.custCompany) {
             page.drawText(formData.custCompany, {
-                x: 63,
-                y: 416,
+                x: 63 + X_OFFSET,
+                y: 416 + Y_OFFSET,
                 size: 16,
                 font: fonts.helveticaBold,
                 color: black
@@ -2616,8 +2620,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Customer Contact (x=62, y=392)
         if (formData.custContact) {
             page.drawText(formData.custContact, {
-                x: 62,
-                y: 392,
+                x: 62 + X_OFFSET,
+                y: 392 + Y_OFFSET,
                 size: 14,
                 font: fonts.helveticaBold,
                 color: black
@@ -2627,8 +2631,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Customer Address (x=82, y=373)
         if (formData.custAddress) {
             page.drawText(formData.custAddress, {
-                x: 82,
-                y: 373,
+                x: 82 + X_OFFSET,
+                y: 373 + Y_OFFSET,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2638,8 +2642,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Customer Phone (x=81, y=354)
         if (formData.custPhone) {
             page.drawText(formData.custPhone, {
-                x: 81,
-                y: 354,
+                x: 81 + X_OFFSET,
+                y: 354 + Y_OFFSET,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2649,8 +2653,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Customer Email (x=80, y=336)
         if (formData.custEmail) {
             page.drawText(formData.custEmail, {
-                x: 80,
-                y: 336,
+                x: 80 + X_OFFSET,
+                y: 336 + Y_OFFSET,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2660,8 +2664,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Salesman Name (x=62, y=180)
         if (formData.salesmanInfo) {
             page.drawText(formData.salesmanInfo.name.toUpperCase(), {
-                x: 62,
-                y: 180,
+                x: 62 + X_OFFSET,
+                y: 180 + Y_OFFSET,
                 size: 14,
                 font: fonts.helveticaBold,
                 color: black
@@ -2669,8 +2673,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
             
             // Salesman Email (x=80, y=160)
             page.drawText(formData.salesmanInfo.email, {
-                x: 80,
-                y: 160,
+                x: 80 + X_OFFSET,
+                y: 160 + Y_OFFSET,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2678,8 +2682,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
             
             // Salesman Phone (x=80, y=143)
             page.drawText(formData.salesmanInfo.phone, {
-                x: 80,
-                y: 143,
+                x: 80 + X_OFFSET,
+                y: 143 + Y_OFFSET,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2925,11 +2929,11 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     y -= 15;
     drawDottedLine(page, 70, y, 525, y, darkGray);
     
-    // Row 2: Engine
+    // Row 2: Engine (BOLD)
     y -= 15;
     if (formData.engineName) {
         const engineText = `- ${formData.engineName}`;
-        page.drawText(truncateText(engineText, 60), { x: 70, y, size: 9, font: fonts.helvetica, color: black });
+        page.drawText(truncateText(engineText, 60), { x: 70, y, size: 9, font: fonts.helveticaBold, color: black });
         if (!formData.hideSubPrices && formData.engineTotal > 0) {
             page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
         }
@@ -3058,16 +3062,47 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
         });
     });
     
-    // Generate annex page(s)
-    let page = pdfDoc.addPage([595.28, 841.89]);
-    let { width, height } = page.getSize();
-    let y = height - 60;
+    // Try to load annex template
+    let templatePage = null;
+    let height = 842;
+    try {
+        const templateUrl = PDF_CONFIG.baseUrl + 'assets/pdf/annex_template.pdf';
+        const response = await fetch(templateUrl);
+        if (response.ok) {
+            const templateBytes = await response.arrayBuffer();
+            const templatePdf = await PDFLib.PDFDocument.load(templateBytes);
+            [templatePage] = await pdfDoc.copyPages(templatePdf, [0]);
+        }
+    } catch (e) {
+        console.warn('Annex template not found, using blank page');
+    }
     
-    // Header
-    drawDiamond(page, 297, height - 25, 12, asiaRed);
-    page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+    // Helper function to add a new annex page
+    async function addAnnexPage() {
+        let page;
+        if (templatePage) {
+            // Copy template for each new page
+            const templateUrl = PDF_CONFIG.baseUrl + 'assets/pdf/annex_template.pdf';
+            const response = await fetch(templateUrl);
+            const templateBytes = await response.arrayBuffer();
+            const templatePdf = await PDFLib.PDFDocument.load(templateBytes);
+            const [newPage] = await pdfDoc.copyPages(templatePdf, [0]);
+            pdfDoc.addPage(newPage);
+            page = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
+        } else {
+            page = pdfDoc.addPage([595.56, 842.04]); // A4
+            // Draw header manually if no template
+            drawDiamond(page, 297, height - 25, 12, asiaRed);
+            page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+        }
+        return page;
+    }
     
-    y = height - 100;
+    // Generate first annex page
+    let page = await addAnnexPage();
+    let { width } = page.getSize();
+    height = 842;
+    let y = height - 100;
     
     // ANNEX 1: ASIS ACCESSORIES
     page.drawText('ANNEX 1:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
@@ -3081,11 +3116,8 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
     } else {
         for (const item of annexItems['ASIS ACCESSORIES']) {
             if (y < 100) {
-                // Add new page
-                page = pdfDoc.addPage([595.28, 841.89]);
-                y = height - 60;
-                drawDiamond(page, 297, height - 25, 12, asiaRed);
-                page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+                // Add new page using template
+                page = await addAnnexPage();
                 y = height - 100;
             }
             
@@ -3098,10 +3130,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
     // ANNEX 2: ELECTRONICS & COMMUNICATION
     y -= 30;
     if (y < 150) {
-        page = pdfDoc.addPage([595.28, 841.89]);
-        y = height - 60;
-        drawDiamond(page, 297, height - 25, 12, asiaRed);
-        page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+        page = await addAnnexPage();
         y = height - 100;
     }
     
@@ -3115,10 +3144,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
     } else {
         for (const item of annexItems['ELECTRONICS & COMMUNICATION']) {
             if (y < 100) {
-                page = pdfDoc.addPage([595.28, 841.89]);
-                y = height - 60;
-                drawDiamond(page, 297, height - 25, 12, asiaRed);
-                page.drawText('PERFORMANCE - QUALITY - DESIGN - SAFETY', { x: 170, y: height - 50, size: 10, font: fonts.helveticaBold, color: black });
+                page = await addAnnexPage();
                 y = height - 100;
             }
             
