@@ -2561,8 +2561,8 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         // Using exact PDF coordinates from measurement
         // ALIGNMENT OFFSET - Adjust these if text needs to shift:
         // Positive X_OFFSET moves text RIGHT, Negative Y_OFFSET moves text DOWN
-        const X_OFFSET = 5;   // Shift right (increase to move more right)
-        const Y_OFFSET = -10;  // Shift down (more negative = more down)
+        const X_OFFSET = 10;   // Shift right (increased)
+        const Y_OFFSET = -24;  // Shift down ~0.5cm (was -10)
         
         // Quote Number (RIGHT-ALIGNED, right edge at x=442, y=627)
         const quoteNumWidth = fonts.helveticaBold.widthOfTextAtSize(formData.quoteNum, 18);
@@ -3102,7 +3102,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
     let page = await addAnnexPage();
     let { width } = page.getSize();
     height = 842;
-    let y = height - 100;
+    let y = height - 130;  // Start ~1cm lower (was -100)
     
     // ANNEX 1: ASIS ACCESSORIES
     page.drawText('ANNEX 1:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
@@ -3118,7 +3118,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
             if (y < 100) {
                 // Add new page using template
                 page = await addAnnexPage();
-                y = height - 100;
+                y = height - 130;  // Start ~1cm lower
             }
             
             const itemText = `- ${item.name} (Qty: ${item.qty})`;
@@ -3131,7 +3131,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
     y -= 30;
     if (y < 150) {
         page = await addAnnexPage();
-        y = height - 100;
+        y = height - 130;  // Start ~1cm lower
     }
     
     page.drawText('ANNEX 2:', { x: 60, y, size: 12, font: fonts.helveticaBold, color: black });
@@ -3145,7 +3145,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
         for (const item of annexItems['ELECTRONICS & COMMUNICATION']) {
             if (y < 100) {
                 page = await addAnnexPage();
-                y = height - 100;
+                y = height - 130;  // Start ~1cm lower
             }
             
             const itemText = `- ${item.name} (Qty: ${item.qty})`;
@@ -3154,9 +3154,7 @@ async function generateAnnexPages(pdfDoc, fonts, formData) {
         }
     }
     
-    // Footer on last annex page
-    page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
-    page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+    // Footer is already on the template - no need to draw it
 }
 
 // ==================== EMBED STATIC PDF ====================
