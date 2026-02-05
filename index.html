@@ -2558,136 +2558,128 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         const black = rgb(0, 0, 0);
         
         // === ADD DYNAMIC TEXT ON TOP OF TEMPLATE ===
+        // Using exact PDF coordinates from measurement
         
-        // Quote Number (right side, below "ADVANCE MARITIME SOLUTION")
-        // Adjusted based on example: IBQ-0-22-095 position
+        // Quote Number (RIGHT-ALIGNED to x≈560, y=627)
+        const quoteNumWidth = fonts.helveticaBold.widthOfTextAtSize(formData.quoteNum, 18);
         page.drawText(formData.quoteNum, {
-            x: 380,
-            y: height - 148,
+            x: 560 - quoteNumWidth,
+            y: 627,
             size: 18,
             font: fonts.helveticaBold,
             color: asiaRed
         });
         
-        // Quotation Title Line 1 - adjusted position
+        // Quotation Title Line 1 (x=63, y=518)
         const titleLines = splitTextToLines(formData.quoteTitle, 45);
         page.drawText(titleLines[0] || '', {
-            x: 85,
-            y: height - 260,
+            x: 63,
+            y: 518,
             size: 18,
             font: fonts.helveticaBold,
             color: black
         });
         
-        // Quotation Title Line 2 (if exists)
+        // Quotation Title Line 2 (x=62, y=494)
         if (titleLines[1]) {
             page.drawText(titleLines[1], {
-                x: 85,
-                y: height - 285,
+                x: 62,
+                y: 494,
                 size: 18,
                 font: fonts.helveticaBold,
                 color: black
             });
         }
         
-        // Tender Number (if present)
-        let yOffset = titleLines[1] ? 310 : 285;
+        // Tender Number (x=62, y=474)
         if (formData.tender) {
             page.drawText('Tender No. ' + formData.tender, {
-                x: 85,
-                y: height - yOffset,
+                x: 62,
+                y: 474,
                 size: 11,
                 font: fonts.helvetica,
                 color: darkGray
             });
         }
         
-        // Customer Company (after "Proposed To:" label on template)
-        let custY = height - 360;
+        // Customer Company (x=63, y=416)
         if (formData.custCompany) {
             page.drawText(formData.custCompany, {
-                x: 85,
-                y: custY,
+                x: 63,
+                y: 416,
                 size: 16,
                 font: fonts.helveticaBold,
                 color: black
             });
-            custY -= 26;
         }
         
-        // Customer Contact
+        // Customer Contact (x=62, y=392)
         if (formData.custContact) {
             page.drawText(formData.custContact, {
-                x: 85,
-                y: custY,
+                x: 62,
+                y: 392,
                 size: 14,
                 font: fonts.helveticaBold,
                 color: black
             });
-            custY -= 24;
         }
         
-        // Customer Address (next to pin icon)
+        // Customer Address (x=82, y=373)
         if (formData.custAddress) {
             page.drawText(formData.custAddress, {
-                x: 100,
-                y: custY,
+                x: 82,
+                y: 373,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
-            custY -= 18;
         }
         
-        // Customer Phone (next to phone icon)
+        // Customer Phone (x=81, y=354)
         if (formData.custPhone) {
             page.drawText(formData.custPhone, {
-                x: 100,
-                y: custY,
+                x: 81,
+                y: 354,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
-            custY -= 18;
         }
         
-        // Customer Email (next to email icon)
+        // Customer Email (x=80, y=336)
         if (formData.custEmail) {
             page.drawText(formData.custEmail, {
-                x: 100,
-                y: custY,
+                x: 80,
+                y: 336,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
         }
         
-        // Salesman Name (after "Prepared" label on template)
-        let salesY = height - 555;
+        // Salesman Name (x=62, y=180)
         if (formData.salesmanInfo) {
             page.drawText(formData.salesmanInfo.name.toUpperCase(), {
-                x: 85,
-                y: salesY,
+                x: 62,
+                y: 180,
                 size: 14,
                 font: fonts.helveticaBold,
                 color: black
             });
-            salesY -= 22;
             
-            // Salesman Email (next to email icon)
+            // Salesman Email (x=80, y=160)
             page.drawText(formData.salesmanInfo.email, {
-                x: 100,
-                y: salesY,
+                x: 80,
+                y: 160,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
             });
-            salesY -= 18;
             
-            // Salesman Phone (next to phone icon)
+            // Salesman Phone (x=80, y=143)
             page.drawText(formData.salesmanInfo.phone, {
-                x: 100,
-                y: salesY,
+                x: 80,
+                y: 143,
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
