@@ -2677,7 +2677,7 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
         if (formData.custEmail) {
             page.drawText(formData.custEmail, {
                 x: 100,   // LINE ~2654: Adjust X
-                y: 311,  // LINE ~2655: Adjust Y
+                y: 312,  // LINE ~2655: Adjust Y
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2697,7 +2697,7 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
             // PAGE1_FIELD: Salesman Email
             page.drawText(formData.salesmanInfo.email, {
                 x: 100,   // LINE ~2676: Adjust X
-                y: 148,  // LINE ~2677: Adjust Y
+                y: 149,  // LINE ~2677: Adjust Y
                 size: 10,
                 font: fonts.helvetica,
                 color: darkGray
