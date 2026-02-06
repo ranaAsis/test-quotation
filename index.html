@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASIS Boats - Professional Quotation System V38</title>
+    <title>ASIS Boats - Professional Quotation System V39</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -2899,20 +2899,22 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     let y = height - 130;
     page.drawText('Ref. No.', { x: 60, y, size: 10, font: fonts.helvetica, color: darkGray });
     page.drawText(formData.quoteNum, { x: 110, y, size: 11, font: fonts.helveticaBold, color: black });
-    page.drawText('Date:', { x: 480, y, size: 10, font: fonts.helvetica, color: darkGray });
-    page.drawText(formData.quoteDate, { x: 510, y, size: 11, font: fonts.helveticaBold, color: black });
+    // Date - right-aligned to content area (last digit at ~550)
+    const dateText = formData.quoteDate;
+    const dateWidth = fonts.helveticaBold.widthOfTextAtSize(dateText, 11);
+    page.drawText('Date:', { x: 470, y, size: 10, font: fonts.helvetica, color: darkGray });
+    page.drawText(dateText, { x: 550 - dateWidth, y, size: 11, font: fonts.helveticaBold, color: black });
     
     // Horizontal line under Ref/Date
     y -= 15;
     page.drawLine({ start: { x: 60, y }, end: { x: 552, y }, thickness: 0.5, color: lightGray });
     
-    // TO: section - styled as a clean label with left border accent
+    // TO: section - styled with left border accent
     y -= 25;
-    // Red accent bar on left
     page.drawRectangle({ x: 60, y: y - 6, width: 4, height: 16, color: asiaRed });
     page.drawText('TO:', { x: 68, y, size: 11, font: fonts.helveticaBold, color: asiaRed });
     
-    // FROM: section - styled as a clean label with left border accent
+    // FROM: section - styled with left border accent
     page.drawRectangle({ x: 310, y: y - 6, width: 4, height: 16, color: asiaRed });
     page.drawText('FROM:', { x: 318, y, size: 11, font: fonts.helveticaBold, color: asiaRed });
     
@@ -2955,25 +2957,23 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     page.drawText('Email:', { x: rightCol, y, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(formData.salesmanInfo?.email || '-', { x: rightValCol, y, size: 9, font: fonts.helveticaBold, color: black });
     
-    // Description table header - cleaner style with left accent and light background
-    y -= 50;
+    // Description table header - same style as TO/FROM with left accent
+    y -= 35; // Reduced from 50
+    const tableHeaderHeight = 20;
     // Light gray background for header row
-    page.drawRectangle({ x: 60, y: y - 7, width: 492, height: 22, color: rgb(0.95, 0.95, 0.95) });
+    page.drawRectangle({ x: 60, y: y - 5, width: 492, height: tableHeaderHeight, color: rgb(0.95, 0.95, 0.95) });
     // Red accent bar on left
-    page.drawRectangle({ x: 60, y: y - 7, width: 4, height: 22, color: asiaRed });
-    // Header text
-    page.drawText('Description', { x: 70, y, size: 10, font: fonts.helveticaBold, color: black });
-    page.drawText('Qty.', { x: 410, y, size: 10, font: fonts.helveticaBold, color: black });
+    page.drawRectangle({ x: 60, y: y - 5, width: 4, height: tableHeaderHeight, color: asiaRed });
+    // Header text - vertically centered
+    const headerTextY = y + 2;
+    page.drawText('Description', { x: 70, y: headerTextY, size: 10, font: fonts.helveticaBold, color: black });
+    page.drawText('Qty.', { x: 420, y: headerTextY, size: 10, font: fonts.helveticaBold, color: black });
     if (!formData.hideSubPrices) {
-        page.drawText('Price', { x: 455, y, size: 10, font: fonts.helveticaBold, color: black });
-        page.drawText('TOTAL ' + currencyDisplay, { x: 495, y, size: 10, font: fonts.helveticaBold, color: black });
+        page.drawText('Price', { x: 480, y: headerTextY, size: 10, font: fonts.helveticaBold, color: black });
     }
     
-    // Table rows
-    y -= 30;
-    
-    // Dotted line before first item
-    drawDottedLine(page, 70, y + 10, 542, y + 10, lightGray);
+    // Table rows - reduced gap after header
+    y -= 22; // Reduced from 30
     
     // Row 1: Boat Type and Size (format: "ASIS 9.5M Aluminium RHIB")
     const boatTypeLabels = {
@@ -2983,13 +2983,12 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     };
     const boatDescription = `ASIS ${formData.boatSize} ${boatTypeLabels[formData.boatType] || formData.boatTypeName}`;
     page.drawText(boatDescription, { x: 70, y, size: 10, font: fonts.helveticaBold, color: black });
-    page.drawText(formData.boatQty.toString(), { x: 415, y, size: 10, font: fonts.helvetica, color: black });
+    page.drawText(formData.boatQty.toString(), { x: 425, y, size: 10, font: fonts.helvetica, color: black });
     if (!formData.hideSubPrices) {
-        page.drawText(formatNumber(formData.boatPrice), { x: 450, y, size: 10, font: fonts.helvetica, color: black });
-        page.drawText(formatNumber(formData.boatTotal), { x: 495, y, size: 10, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.boatPrice), { x: 470, y, size: 10, font: fonts.helvetica, color: black });
     }
     
-    // Dotted line
+    // Dotted line UNDER boat type row (removed the first dotted line above it)
     y -= 15;
     drawDottedLine(page, 70, y, 542, y, lightGray);
     
@@ -3006,7 +3005,7 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
         });
         
         if (!formData.hideSubPrices && formData.engineTotal > 0) {
-            page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 450, y, size: 9, font: fonts.helvetica, color: black });
+            page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 470, y, size: 9, font: fonts.helvetica, color: black });
         }
         
         if (engineLines.length > 1) {
@@ -3018,14 +3017,14 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     y -= 20;
     page.drawText('- ASIS ACCESSORIES - (ANNEX-1)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
     if (!formData.hideSubPrices && formData.asiaAccessoriesTotal > 0) {
-        page.drawText(formatNumber(formData.asiaAccessoriesTotal / formData.boatQty), { x: 450, y, size: 9, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.asiaAccessoriesTotal / formData.boatQty), { x: 470, y, size: 9, font: fonts.helvetica, color: black });
     }
     
     // Row 4: ELECTRONIC AND COMMUNICATION
     y -= 20;
     page.drawText('- ELECTRONIC AND COMMUNICATION - (ANNEX-2)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
     if (!formData.hideSubPrices && formData.electronicsTotal > 0) {
-        page.drawText(formatNumber(formData.electronicsTotal / formData.boatQty), { x: 450, y, size: 9, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.electronicsTotal / formData.boatQty), { x: 470, y, size: 9, font: fonts.helvetica, color: black });
     }
     
     // Row 5: TECHNICAL SPECIFICATIONS
@@ -3036,57 +3035,59 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     y -= 15;
     drawDottedLine(page, 70, y, 542, y, lightGray);
     
-    // === NOTE AND TOTAL BOX (positioned closer to description) ===
-    y -= 25;
+    // === NOTE AND TOTAL BOX (shorter height - about half) ===
+    y -= 20;
     const noteBoxY = y;
-    page.drawRectangle({ x: 60, y: noteBoxY - 55, width: 492, height: 70, borderColor: black, borderWidth: 1 });
+    const noteBoxHeight = 40; // Reduced from 70
+    page.drawRectangle({ x: 60, y: noteBoxY - noteBoxHeight + 5, width: 492, height: noteBoxHeight, borderColor: black, borderWidth: 1 });
     
     // Note
     page.drawText('Note:', { x: 70, y: noteBoxY - 5, size: 9, font: fonts.helveticaBold, color: asiaRed });
     if (formData.notes) {
-        const noteLines = splitTextToLines(formData.notes, 45);
-        noteLines.slice(0, 3).forEach((line, i) => {
+        const noteLines = splitTextToLines(formData.notes, 40);
+        noteLines.slice(0, 2).forEach((line, i) => {
             page.drawText(line, { x: 100, y: noteBoxY - 5 - (i * 12), size: 9, font: fonts.helvetica, color: black });
         });
     }
     
     // Total with currency
-    page.drawText('TOTAL', { x: 410, y: noteBoxY - 25, size: 11, font: fonts.helveticaBold, color: black });
-    page.drawText(`${currencyDisplay} ${formatNumber(formData.total)}`, { x: 455, y: noteBoxY - 25, size: 14, font: fonts.helveticaBold, color: black });
+    page.drawText('TOTAL', { x: 410, y: noteBoxY - 18, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText(`${currencyDisplay} ${formatNumber(formData.total)}`, { x: 450, y: noteBoxY - 18, size: 14, font: fonts.helveticaBold, color: black });
     
     // === TERMS SECTION ===
-    y = noteBoxY - 80;
+    y = noteBoxY - noteBoxHeight - 15;
     const termY = y;
     const termLabelX = 60;
     const termValueX = 155;
+    const termLineEnd = 400; // Shortened dotted lines
     const lineHeight = 18;
     
     page.drawText('Term of Payment', { x: termLabelX, y: termY, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(`:  ${formData.paymentTerms}`, { x: termValueX, y: termY, size: 9, font: fonts.helveticaBold, color: black });
-    drawDottedLine(page, termValueX + 5, termY - 3, 540, termY - 3, lightGray);
+    drawDottedLine(page, termValueX + 5, termY - 3, termLineEnd, termY - 3, lightGray);
     
     page.drawText('Delivery Schedule', { x: termLabelX, y: termY - lineHeight, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(`:  ${formData.deliveryTimeline}`, { x: termValueX, y: termY - lineHeight, size: 9, font: fonts.helveticaBold, color: black });
-    drawDottedLine(page, termValueX + 5, termY - lineHeight - 3, 540, termY - lineHeight - 3, lightGray);
+    drawDottedLine(page, termValueX + 5, termY - lineHeight - 3, termLineEnd, termY - lineHeight - 3, lightGray);
     
     page.drawText('Delivery Terms', { x: termLabelX, y: termY - lineHeight * 2, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(`:  ${formData.deliveryTerms}`, { x: termValueX, y: termY - lineHeight * 2, size: 9, font: fonts.helveticaBold, color: black });
-    drawDottedLine(page, termValueX + 5, termY - lineHeight * 2 - 3, 540, termY - lineHeight * 2 - 3, lightGray);
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 2 - 3, termLineEnd, termY - lineHeight * 2 - 3, lightGray);
     
     page.drawText('Warranty', { x: termLabelX, y: termY - lineHeight * 3, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(':  Click here to read full warranty', { x: termValueX, y: termY - lineHeight * 3, size: 9, font: fonts.helveticaBold, color: asiaRed });
-    drawDottedLine(page, termValueX + 5, termY - lineHeight * 3 - 3, 540, termY - lineHeight * 3 - 3, lightGray);
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 3 - 3, termLineEnd, termY - lineHeight * 3 - 3, lightGray);
     
     page.drawText('Validity', { x: termLabelX, y: termY - lineHeight * 4, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(`:  ${formData.validity}`, { x: termValueX, y: termY - lineHeight * 4, size: 9, font: fonts.helveticaBold, color: black });
-    drawDottedLine(page, termValueX + 5, termY - lineHeight * 4 - 3, 540, termY - lineHeight * 4 - 3, lightGray);
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 4 - 3, termLineEnd, termY - lineHeight * 4 - 3, lightGray);
     
     page.drawText('Country of Origin', { x: termLabelX, y: termY - lineHeight * 5, size: 9, font: fonts.helvetica, color: darkGray });
     page.drawText(':  United Arab Emirates', { x: termValueX, y: termY - lineHeight * 5, size: 9, font: fonts.helveticaBold, color: black });
-    drawDottedLine(page, termValueX + 5, termY - lineHeight * 5 - 3, 540, termY - lineHeight * 5 - 3, lightGray);
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 5 - 3, termLineEnd, termY - lineHeight * 5 - 3, lightGray);
     
     // === SIGNATURE SECTION (after Country of Origin) ===
-    const sigY = termY - lineHeight * 6 - 15;
+    const sigY = termY - lineHeight * 6 - 10;
     
     // Left side: "For ASIS Boats L.L.C," and salesman name
     page.drawText('For ', { x: termLabelX, y: sigY, size: 10, font: fonts.helvetica, color: black });
@@ -3098,8 +3099,10 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     
     // Right side: SIGN AND STAMP box
     const stampX = 420;
-    page.drawRectangle({ x: stampX, y: sigY - 50, width: 125, height: 65, borderColor: black, borderWidth: 0.5 });
-    page.drawText('SIGN AND STAMP', { x: stampX + 25, y: sigY - 25, size: 9, font: fonts.helvetica, color: darkGray });
+    const stampBoxHeight = 60;
+    page.drawRectangle({ x: stampX, y: sigY - stampBoxHeight + 15, width: 125, height: stampBoxHeight, borderColor: black, borderWidth: 0.5 });
+    // Text at bottom of rectangle, smaller font
+    page.drawText('SIGN AND STAMP', { x: stampX + 28, y: sigY - stampBoxHeight + 20, size: 7, font: fonts.helvetica, color: darkGray });
 }
 
 // ==================== PAGE 4: ANNEX PAGES ====================
