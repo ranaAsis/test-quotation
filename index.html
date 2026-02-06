@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASIS Boats - Professional Quotation System V32</title>
+    <title>ASIS Boats - Professional Quotation System V33</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -2571,32 +2571,58 @@ async function generateCoverPage(pdfDoc, fonts, formData) {
             color: asiaRed
         });
         
-        // PAGE1_FIELD: Title Line 1
+        // PAGE1_FIELD: Title and Tender - Dynamic positioning
+        // Stack from bottom (Y=436) upward based on what's present
         const titleLines = splitTextToLines(formData.quoteTitle, 45);
+        const hasTitle2 = titleLines[1] ? true : false;
+        const hasTender = formData.tender ? true : false;
+        
+        // Calculate Y positions based on what elements exist
+        let title1Y, title2Y, tenderY;
+        
+        if (hasTitle2 && hasTender) {
+            // All three present: stack normally
+            title1Y = 480;
+            title2Y = 456;
+            tenderY = 436;
+        } else if (!hasTitle2 && hasTender) {
+            // No title line 2: title1 moves to title2 position
+            title1Y = 456;
+            tenderY = 436;
+        } else if (hasTitle2 && !hasTender) {
+            // No tender: both titles move down
+            title1Y = 456;
+            title2Y = 436;
+        } else {
+            // Only title line 1: moves to bottom position
+            title1Y = 436;
+        }
+        
+        // Draw Title Line 1
         page.drawText(titleLines[0] || '', {
-            x: 73,   // LINE ~2577: Adjust X
-            y: 480,  // LINE ~2578: Adjust Y
+            x: 73,
+            y: title1Y,
             size: 18,
             font: fonts.helveticaBold,
             color: black
         });
         
-        // PAGE1_FIELD: Title Line 2
-        if (titleLines[1]) {
+        // Draw Title Line 2 (if exists)
+        if (hasTitle2) {
             page.drawText(titleLines[1], {
-                x: 73,   // LINE ~2587: Adjust X
-                y: 456,  // LINE ~2588: Adjust Y
+                x: 73,
+                y: title2Y,
                 size: 18,
                 font: fonts.helveticaBold,
                 color: black
             });
         }
         
-        // PAGE1_FIELD: Tender Number
-        if (formData.tender) {
+        // Draw Tender Number (if exists)
+        if (hasTender) {
             page.drawText('Tender No. ' + formData.tender, {
-                x: 73,   // LINE ~2598: Adjust X
-                y: 436,  // LINE ~2599: Adjust Y
+                x: 73,
+                y: tenderY,
                 size: 11,
                 font: fonts.helvetica,
                 color: darkGray
@@ -2926,13 +2952,24 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     y -= 15;
     drawDottedLine(page, 70, y, 525, y, darkGray);
     
-    // Row 2: Engine (BOLD)
+    // Row 2: Engine (BOLD) - with line wrapping for long names
     y -= 15;
     if (formData.engineName) {
         const engineText = `- ${formData.engineName}`;
-        page.drawText(truncateText(engineText, 60), { x: 70, y, size: 9, font: fonts.helveticaBold, color: black });
+        const engineLines = splitTextToLines(engineText, 55); // Split at ~55 chars to fit before price column
+        
+        engineLines.forEach((line, i) => {
+            page.drawText(line, { x: 70, y: y - (i * 12), size: 9, font: fonts.helveticaBold, color: black });
+        });
+        
+        // Price on first line only
         if (!formData.hideSubPrices && formData.engineTotal > 0) {
             page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+        }
+        
+        // Adjust y for additional lines
+        if (engineLines.length > 1) {
+            y -= (engineLines.length - 1) * 12;
         }
     }
     
