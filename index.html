@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASIS Boats - Professional Quotation System V40</title>
+    <title>ASIS Boats - Professional Quotation System V41</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -3055,7 +3055,7 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     page.drawText(formatNumber(formData.total), { x: 480, y: noteBoxY - 18, size: 14, font: fonts.helveticaBold, color: black });
     
     // === TERMS SECTION ===
-    y = noteBoxY - noteBoxHeight - 15;
+    y = noteBoxY - noteBoxHeight - 30; // Increased space from -15 to -30
     const termY = y;
     const termLabelX = 60;
     const termValueX = 155;
@@ -3087,7 +3087,7 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     drawDottedLine(page, termValueX + 5, termY - lineHeight * 5 - 3, termLineEnd, termY - lineHeight * 5 - 3, lightGray);
     
     // === SIGNATURE SECTION (after Country of Origin - with more space) ===
-    const sigY = termY - lineHeight * 6 - 25; // Increased space from -10 to -25
+    const sigY = termY - lineHeight * 6 - 25;
     
     // Left side: "For ASIS Boats L.L.C," and salesman name
     page.drawText('For ', { x: termLabelX, y: sigY, size: 10, font: fonts.helvetica, color: black });
@@ -3097,10 +3097,10 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     // Salesman name below
     page.drawText(formData.salesmanInfo?.name || '', { x: termLabelX, y: sigY - 18, size: 10, font: fonts.helveticaBold, color: black });
     
-    // Right side: SIGN AND STAMP - dotted line with text below (replaced rectangle)
+    // Right side: SIGN AND STAMP - dotted line with text below (moved further down)
     const stampX = 420;
-    drawDottedLine(page, stampX, sigY - 35, stampX + 120, sigY - 35, darkGray);
-    page.drawText('SIGN AND STAMP', { x: stampX + 25, y: sigY - 48, size: 7, font: fonts.helvetica, color: darkGray });
+    drawDottedLine(page, stampX, sigY - 55, stampX + 120, sigY - 55, darkGray);
+    page.drawText('SIGN AND STAMP', { x: stampX + 25, y: sigY - 68, size: 7, font: fonts.helvetica, color: darkGray });
 }
 
 // ==================== PAGE 4: ANNEX PAGES ====================
