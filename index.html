@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASIS Boats - Professional Quotation System V35</title>
+    <title>ASIS Boats - Professional Quotation System V36</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -2512,6 +2512,9 @@ function gatherFormData() {
         discount,
         total,
         
+        // Currency
+        currency: state.currency,
+        
         // Options
         hideSubPrices,
         
@@ -2844,51 +2847,75 @@ async function generateCoverPageFallback(pdfDoc, fonts, formData) {
     });
 }
 
-// ==================== PAGE 3: QUOTATION DETAILS ====================
+// ==================== PAGE 3: QUOTATION DETAILS (Using Template) ====================
 async function generateQuotationPage(pdfDoc, fonts, formData) {
     const { rgb } = PDFLib;
-    const page = pdfDoc.addPage([612, 792]); // US Letter size
-    const { width, height } = page.getSize();
     
     // Colors
     const asiaRed = rgb(0.722, 0.196, 0.251);
     const darkGray = rgb(0.4, 0.4, 0.4);
     const black = rgb(0, 0, 0);
     const lightGray = rgb(0.9, 0.9, 0.9);
+    const white = rgb(1, 1, 1);
     
-    // Diamond logo
-    drawDiamond(page, 297, height - 35, 15, asiaRed);
+    // Try to load the page 3 template
+    let page;
+    let height = 792;
     
-    // Title
-    page.drawText('QUOTATION', {
-        x: 200,
-        y: height - 90,
-        size: 28,
-        font: fonts.timesItalic,
-        color: black
-    });
+    try {
+        const templateUrl = PDF_CONFIG.baseUrl + '/assets/pdf/page3_template.pdf';
+        const response = await fetch(templateUrl);
+        
+        if (response.ok) {
+            const templateBytes = await response.arrayBuffer();
+            const templatePdf = await PDFLib.PDFDocument.load(templateBytes);
+            const [templatePage] = await pdfDoc.copyPages(templatePdf, [0]);
+            pdfDoc.addPage(templatePage);
+            page = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
+            console.log('Page 3 template loaded successfully');
+        } else {
+            page = pdfDoc.addPage([612, 792]);
+            // Draw header manually if no template
+            drawDiamond(page, 306, height - 25, 12, asiaRed);
+            page.drawText('QUOTATION', { x: 200, y: height - 90, size: 28, font: fonts.timesItalic, color: black });
+            // Draw footer
+            page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
+            page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+        }
+    } catch (e) {
+        page = pdfDoc.addPage([612, 792]);
+        drawDiamond(page, 306, height - 25, 12, asiaRed);
+        page.drawText('QUOTATION', { x: 200, y: height - 90, size: 28, font: fonts.timesItalic, color: black });
+        page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
+        page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+    }
+    
+    // Currency symbol/code for display
+    const currencyDisplay = formData.currency || 'USD';
+    
+    // === DYNAMIC CONTENT ===
     
     // Ref. No. and Date line
     let y = height - 130;
     page.drawText('Ref. No.', { x: 60, y, size: 10, font: fonts.helvetica, color: darkGray });
     page.drawText(formData.quoteNum, { x: 110, y, size: 11, font: fonts.helveticaBold, color: black });
-    page.drawText('Date:', { x: 420, y, size: 10, font: fonts.helvetica, color: darkGray });
-    page.drawText(formData.quoteDate, { x: 450, y, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText('Date:', { x: 480, y, size: 10, font: fonts.helvetica, color: darkGray });
+    page.drawText(formData.quoteDate, { x: 510, y, size: 11, font: fonts.helveticaBold, color: black });
     
     // Horizontal line
     y -= 15;
-    page.drawLine({ start: { x: 60, y }, end: { x: 535, y }, thickness: 0.5, color: lightGray });
+    page.drawLine({ start: { x: 60, y }, end: { x: 552, y }, thickness: 0.5, color: lightGray });
     
     // TO: section
     y -= 25;
-    page.drawRectangle({ x: 60, y: y - 5, width: 40, height: 18, color: asiaRed });
-    page.drawText('TO:', { x: 65, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    page.drawRectangle({ x: 60, y: y - 5, width: 30, height: 18, color: asiaRed });
+    page.drawText('TO:', { x: 65, y, size: 10, font: fonts.helveticaBold, color: white });
     
     // FROM: section
     page.drawRectangle({ x: 310, y: y - 5, width: 50, height: 18, color: asiaRed });
-    page.drawText('FROM:', { x: 315, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    page.drawText('FROM:', { x: 315, y, size: 10, font: fonts.helveticaBold, color: white });
     
-    // Customer details
+    // Customer and Company details
     y -= 25;
     const leftCol = 60;
     const leftValCol = 140;
@@ -2929,16 +2956,19 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     
     // Description table header
     y -= 50;
-    page.drawRectangle({ x: 60, y: y - 5, width: 475, height: 20, color: asiaRed });
-    page.drawText('Description', { x: 70, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText('Qty.', { x: 400, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+    page.drawRectangle({ x: 60, y: y - 5, width: 492, height: 20, color: asiaRed });
+    page.drawText('Description', { x: 70, y, size: 10, font: fonts.helveticaBold, color: white });
+    page.drawText('Qty.', { x: 410, y, size: 10, font: fonts.helveticaBold, color: white });
     if (!formData.hideSubPrices) {
-        page.drawText('Price', { x: 445, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
-        page.drawText('TOTAL AED', { x: 485, y, size: 10, font: fonts.helveticaBold, color: rgb(1, 1, 1) });
+        page.drawText('Price', { x: 455, y, size: 10, font: fonts.helveticaBold, color: white });
+        page.drawText('TOTAL ' + currencyDisplay, { x: 495, y, size: 10, font: fonts.helveticaBold, color: white });
     }
     
     // Table rows
     y -= 30;
+    
+    // Dotted line before first item
+    drawDottedLine(page, 70, y + 10, 542, y + 10, lightGray);
     
     // Row 1: Boat Type and Size (format: "ASIS 9.5M Aluminium RHIB")
     const boatTypeLabels = {
@@ -2948,32 +2978,32 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     };
     const boatDescription = `ASIS ${formData.boatSize} ${boatTypeLabels[formData.boatType] || formData.boatTypeName}`;
     page.drawText(boatDescription, { x: 70, y, size: 10, font: fonts.helveticaBold, color: black });
-    page.drawText(formData.boatQty.toString(), { x: 405, y, size: 10, font: fonts.helvetica, color: black });
+    page.drawText(formData.boatQty.toString(), { x: 415, y, size: 10, font: fonts.helvetica, color: black });
     if (!formData.hideSubPrices) {
-        page.drawText(formatNumber(formData.boatPrice), { x: 440, y, size: 10, font: fonts.helvetica, color: black });
-        page.drawText(formatNumber(formData.boatTotal), { x: 485, y, size: 10, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.boatPrice), { x: 450, y, size: 10, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.boatTotal), { x: 495, y, size: 10, font: fonts.helvetica, color: black });
     }
     
     // Dotted line
     y -= 15;
-    drawDottedLine(page, 70, y, 525, y, darkGray);
+    drawDottedLine(page, 70, y, 542, y, lightGray);
     
     // Row 2: Engine (BOLD) - with line wrapping for long names
     y -= 15;
+    let engineLinesCount = 1;
     if (formData.engineName) {
         const engineText = `- ${formData.engineName}`;
-        const engineLines = splitTextToLines(engineText, 55); // Split at ~55 chars to fit before price column
+        const engineLines = splitTextToLines(engineText, 55);
+        engineLinesCount = engineLines.length;
         
         engineLines.forEach((line, i) => {
             page.drawText(line, { x: 70, y: y - (i * 12), size: 9, font: fonts.helveticaBold, color: black });
         });
         
-        // Price on first line only
         if (!formData.hideSubPrices && formData.engineTotal > 0) {
-            page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+            page.drawText(formatNumber(formData.engineTotal / formData.boatQty), { x: 450, y, size: 9, font: fonts.helvetica, color: black });
         }
         
-        // Adjust y for additional lines
         if (engineLines.length > 1) {
             y -= (engineLines.length - 1) * 12;
         }
@@ -2983,75 +3013,88 @@ async function generateQuotationPage(pdfDoc, fonts, formData) {
     y -= 20;
     page.drawText('- ASIS ACCESSORIES - (ANNEX-1)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
     if (!formData.hideSubPrices && formData.asiaAccessoriesTotal > 0) {
-        page.drawText(formatNumber(formData.asiaAccessoriesTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.asiaAccessoriesTotal / formData.boatQty), { x: 450, y, size: 9, font: fonts.helvetica, color: black });
     }
     
     // Row 4: ELECTRONIC AND COMMUNICATION
     y -= 20;
     page.drawText('- ELECTRONIC AND COMMUNICATION - (ANNEX-2)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
     if (!formData.hideSubPrices && formData.electronicsTotal > 0) {
-        page.drawText(formatNumber(formData.electronicsTotal / formData.boatQty), { x: 440, y, size: 9, font: fonts.helvetica, color: black });
+        page.drawText(formatNumber(formData.electronicsTotal / formData.boatQty), { x: 450, y, size: 9, font: fonts.helvetica, color: black });
     }
     
     // Row 5: TECHNICAL SPECIFICATIONS
     y -= 20;
     page.drawText('- TECHNICAL SPECIFICATIONS - (ANNEX-3)', { x: 70, y, size: 9, font: fonts.helvetica, color: black });
     
-    // More dotted lines for empty rows
-    for (let i = 0; i < 3; i++) {
-        y -= 20;
-        drawDottedLine(page, 70, y, 525, y, lightGray);
-    }
+    // Dotted line after last description item
+    y -= 15;
+    drawDottedLine(page, 70, y, 542, y, lightGray);
     
-    // Note and Total box
-    y -= 40;
-    page.drawRectangle({ x: 60, y: y - 60, width: 475, height: 80, borderColor: black, borderWidth: 1 });
+    // === NOTE AND TOTAL BOX (positioned closer to description) ===
+    y -= 25;
+    const noteBoxY = y;
+    page.drawRectangle({ x: 60, y: noteBoxY - 55, width: 492, height: 70, borderColor: black, borderWidth: 1 });
     
     // Note
-    page.drawText('Note:', { x: 70, y: y - 5, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    page.drawText('Note:', { x: 70, y: noteBoxY - 5, size: 9, font: fonts.helveticaBold, color: asiaRed });
     if (formData.notes) {
-        const noteLines = splitTextToLines(formData.notes, 50);
+        const noteLines = splitTextToLines(formData.notes, 45);
         noteLines.slice(0, 3).forEach((line, i) => {
-            page.drawText(line, { x: 100, y: y - 5 - (i * 12), size: 9, font: fonts.helvetica, color: black });
+            page.drawText(line, { x: 100, y: noteBoxY - 5 - (i * 12), size: 9, font: fonts.helvetica, color: black });
         });
     }
     
-    // Total
-    page.drawText('TOTAL AED', { x: 400, y: y - 25, size: 11, font: fonts.helveticaBold, color: black });
-    page.drawText(formatNumber(formData.total), { x: 480, y: y - 25, size: 14, font: fonts.helveticaBold, color: black });
+    // Total with currency
+    page.drawText('TOTAL', { x: 410, y: noteBoxY - 25, size: 11, font: fonts.helveticaBold, color: black });
+    page.drawText(`${currencyDisplay} ${formatNumber(formData.total)}`, { x: 455, y: noteBoxY - 25, size: 14, font: fonts.helveticaBold, color: black });
     
-    // Terms section
-    y -= 100;
+    // === TERMS SECTION ===
+    y = noteBoxY - 80;
     const termY = y;
     const termLabelX = 60;
-    const termValueX = 160;
+    const termValueX = 155;
     const lineHeight = 18;
     
     page.drawText('Term of Payment', { x: termLabelX, y: termY, size: 9, font: fonts.helvetica, color: darkGray });
-    page.drawText(`: ${formData.paymentTerms}`, { x: termValueX, y: termY, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText(`:  ${formData.paymentTerms}`, { x: termValueX, y: termY, size: 9, font: fonts.helveticaBold, color: black });
+    drawDottedLine(page, termValueX + 5, termY - 3, 540, termY - 3, lightGray);
     
     page.drawText('Delivery Schedule', { x: termLabelX, y: termY - lineHeight, size: 9, font: fonts.helvetica, color: darkGray });
-    page.drawText(`: ${formData.deliveryTimeline}`, { x: termValueX, y: termY - lineHeight, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText(`:  ${formData.deliveryTimeline}`, { x: termValueX, y: termY - lineHeight, size: 9, font: fonts.helveticaBold, color: black });
+    drawDottedLine(page, termValueX + 5, termY - lineHeight - 3, 540, termY - lineHeight - 3, lightGray);
     
     page.drawText('Delivery Terms', { x: termLabelX, y: termY - lineHeight * 2, size: 9, font: fonts.helvetica, color: darkGray });
-    page.drawText(`: ${formData.deliveryTerms}`, { x: termValueX, y: termY - lineHeight * 2, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText(`:  ${formData.deliveryTerms}`, { x: termValueX, y: termY - lineHeight * 2, size: 9, font: fonts.helveticaBold, color: black });
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 2 - 3, 540, termY - lineHeight * 2 - 3, lightGray);
     
     page.drawText('Warranty', { x: termLabelX, y: termY - lineHeight * 3, size: 9, font: fonts.helvetica, color: darkGray });
-    page.drawText(': Click here to read full warranty', { x: termValueX, y: termY - lineHeight * 3, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    page.drawText(':  Click here to read full warranty', { x: termValueX, y: termY - lineHeight * 3, size: 9, font: fonts.helveticaBold, color: asiaRed });
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 3 - 3, 540, termY - lineHeight * 3 - 3, lightGray);
     
     page.drawText('Validity', { x: termLabelX, y: termY - lineHeight * 4, size: 9, font: fonts.helvetica, color: darkGray });
-    page.drawText(`: ${formData.validity}`, { x: termValueX, y: termY - lineHeight * 4, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText(`:  ${formData.validity}`, { x: termValueX, y: termY - lineHeight * 4, size: 9, font: fonts.helveticaBold, color: black });
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 4 - 3, 540, termY - lineHeight * 4 - 3, lightGray);
     
     page.drawText('Country of Origin', { x: termLabelX, y: termY - lineHeight * 5, size: 9, font: fonts.helvetica, color: darkGray });
-    page.drawText(': United Arab Emirates', { x: termValueX, y: termY - lineHeight * 5, size: 9, font: fonts.helveticaBold, color: black });
+    page.drawText(':  United Arab Emirates', { x: termValueX, y: termY - lineHeight * 5, size: 9, font: fonts.helveticaBold, color: black });
+    drawDottedLine(page, termValueX + 5, termY - lineHeight * 5 - 3, 540, termY - lineHeight * 5 - 3, lightGray);
     
-    // SIGN AND STAMP box
-    page.drawRectangle({ x: 420, y: termY - lineHeight * 5.5, width: 115, height: 60, borderColor: black, borderWidth: 0.5 });
-    page.drawText('SIGN AND STAMP', { x: 440, y: termY - lineHeight * 4, size: 8, font: fonts.helvetica, color: darkGray });
+    // === SIGNATURE SECTION (replaces SIGN AND STAMP rectangle) ===
+    const sigX = 420;
+    const sigY = termY - lineHeight * 3;
     
-    // Footer
-    page.drawLine({ start: { x: 180, y: 50 }, end: { x: 415, y: 50 }, thickness: 0.5, color: darkGray });
-    page.drawText('www.asisboats.com', { x: 255, y: 35, size: 10, font: fonts.helveticaBold, color: black });
+    // "For ASIS Boats L.L.C," with ASIS Boats L.L.C in bold
+    page.drawText('For ', { x: sigX, y: sigY, size: 10, font: fonts.helvetica, color: black });
+    page.drawText('ASIS Boats L.L.C', { x: sigX + 20, y: sigY, size: 10, font: fonts.helveticaBold, color: black });
+    page.drawText(',', { x: sigX + 105, y: sigY, size: 10, font: fonts.helvetica, color: black });
+    
+    // Salesman name
+    page.drawText(formData.salesmanInfo?.name || '', { x: sigX, y: sigY - 20, size: 10, font: fonts.helveticaBold, color: black });
+    
+    // Space for signature (just a line)
+    page.drawLine({ start: { x: sigX, y: sigY - 55 }, end: { x: sigX + 115, y: sigY - 55 }, thickness: 0.5, color: black });
+    page.drawText('SIGN AND STAMP', { x: sigX + 15, y: sigY - 68, size: 8, font: fonts.helvetica, color: darkGray });
 }
 
 // ==================== PAGE 4: ANNEX PAGES ====================
